@@ -3,7 +3,6 @@ import re
 import dateutil.parser as parser
 
 def capacity_sorter(json_data):
-    file_names = []
     new_averages = []
     for i in json_data:
         names = []
@@ -34,14 +33,14 @@ def capacity_sorter(json_data):
             if len(inc_temp) > 0:
                 last_inc_bu.append(inc_temp[0]['BackupSize'])
                 last_inc_da.append(inc_temp[0]['DataSize'])
-            data = {
-                "jobName": i['jobName'],
-                "lastFullBu": round(sum(last_full_bu),4),
-                "lastFullDa": round(sum(last_full_da),4),
-                "lastIncBu": round(sum(last_inc_bu),4),
-                "lastIncDa": round(sum(last_inc_da),4),
-                "changeRateBu": round(sum(last_inc_bu) / sum(last_full_bu),4),
-                "changeRateDa": round(sum(last_inc_da) / sum(last_full_da),4)
-            }
-            new_averages.append(data)
+        data = {
+            "jobName": i['jobName'],
+            "lastFullBu": round(sum(last_full_bu),4),
+            "lastFullDa": round(sum(last_full_da),4),
+            "lastIncBu": round(sum(last_inc_bu),4),
+            "lastIncDa": round(sum(last_inc_da),4),
+            "changeRateBu": round(sum(last_inc_bu) / sum(last_full_bu),4),
+            "changeRateDa": round(sum(last_inc_da) / sum(last_full_da),4)
+        }
+        new_averages.append(data)
     return new_averages

@@ -14,7 +14,7 @@ from capacity_sorter import capacity_sorter
 
 urllib3.disable_warnings()
 
-HOST = input("Enter server address:")
+HOST = input("Enter server address: ")
 username = input('Enter Username: ')
 password = getpass.getpass("Enter password: ")
 

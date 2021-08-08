@@ -1,0 +1,32 @@
+[
+    {
+        "name": "k8s",
+        "avBackupSize": 7.394379615783691,
+        "avDataSize": 120.00002397643402
+    },
+    {
+        "name": "Tiny NFS vm",
+        "avBackupSize": 0.4432106018066406,
+        "avDataSize": 4.000020710751414
+    },
+    {
+        "name": "Mixed SOBR",
+        "avBackupSize": 0.70501708984375,
+        "avDataSize": 4.000021208077669
+    },
+    {
+        "name": "SQL1",
+        "avBackupSize": 17.0318603515625,
+        "avDataSize": 80.00041080825031
+    },
+    {
+        "name": "PerJob",
+        "avBackupSize": 0.72430419921875,
+        "avDataSize": 8.000042067840695
+    },
+    {
+        "name": "TinyVM2Netapp",
+        "avBackupSize": 0.96795654296875,
+        "avDataSize": 4.000020751729608
+    }
+]

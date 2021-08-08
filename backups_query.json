@@ -1,0 +1,952 @@
+{
+    "Refs": {
+        "Refs": [
+            {
+                "Links": [
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/backupServers/36a6cec7-f3d9-4c42-913d-ef7fec97a0b1",
+                        "Name": "192.168.4.44",
+                        "Type": "BackupServerReference"
+                    },
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/repositories/bcb3a145-c2d8-4565-bf53-64b4910baf68",
+                        "Name": "NFS1",
+                        "Type": "RepositoryReference"
+                    },
+                    {
+                        "Rel": "Alternate",
+                        "Href": "https://192.168.4.44:9398/api/backups/7c226edf-8ff9-4762-a01c-08a5b4dcfd6c?format=Entity",
+                        "Name": "NFS Immutible",
+                        "Type": "Backup"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/7c226edf-8ff9-4762-a01c-08a5b4dcfd6c/restorePoints",
+                        "Name": null,
+                        "Type": "RestorePointReferenceList"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/7c226edf-8ff9-4762-a01c-08a5b4dcfd6c/backupFiles",
+                        "Name": null,
+                        "Type": "BackupFileReferenceList"
+                    }
+                ],
+                "UID": "urn:veeam:Backup:7c226edf-8ff9-4762-a01c-08a5b4dcfd6c",
+                "Name": "NFS Immutible",
+                "Href": "https://192.168.4.44:9398/api/backups/7c226edf-8ff9-4762-a01c-08a5b4dcfd6c",
+                "Type": "BackupReference"
+            },
+            {
+                "Links": [
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/backupServers/36a6cec7-f3d9-4c42-913d-ef7fec97a0b1",
+                        "Name": "192.168.4.44",
+                        "Type": "BackupServerReference"
+                    },
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/repositories/35754ea8-01cf-4397-8d26-c8d49c0449c5",
+                        "Name": "Mixed Repo",
+                        "Type": "RepositoryReference"
+                    },
+                    {
+                        "Rel": "Alternate",
+                        "Href": "https://192.168.4.44:9398/api/backups/9bb087f4-8d50-420b-bdda-0cddcdde86e7?format=Entity",
+                        "Name": "Mixed SOBR",
+                        "Type": "Backup"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/9bb087f4-8d50-420b-bdda-0cddcdde86e7/restorePoints",
+                        "Name": null,
+                        "Type": "RestorePointReferenceList"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/9bb087f4-8d50-420b-bdda-0cddcdde86e7/backupFiles",
+                        "Name": null,
+                        "Type": "BackupFileReferenceList"
+                    }
+                ],
+                "UID": "urn:veeam:Backup:9bb087f4-8d50-420b-bdda-0cddcdde86e7",
+                "Name": "Mixed SOBR",
+                "Href": "https://192.168.4.44:9398/api/backups/9bb087f4-8d50-420b-bdda-0cddcdde86e7",
+                "Type": "BackupReference"
+            },
+            {
+                "Links": [
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/backupServers/36a6cec7-f3d9-4c42-913d-ef7fec97a0b1",
+                        "Name": "192.168.4.44",
+                        "Type": "BackupServerReference"
+                    },
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/repositories/d51ba7e6-d4fb-4a50-ad90-aacdca13f32d",
+                        "Name": "Ubuntu_DC1_Repo1",
+                        "Type": "RepositoryReference"
+                    },
+                    {
+                        "Rel": "Alternate",
+                        "Href": "https://192.168.4.44:9398/api/backups/19e7657d-8b5b-4d39-b3ae-0e1d1594cc91?format=Entity",
+                        "Name": "k8s",
+                        "Type": "Backup"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/19e7657d-8b5b-4d39-b3ae-0e1d1594cc91/restorePoints",
+                        "Name": null,
+                        "Type": "RestorePointReferenceList"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/19e7657d-8b5b-4d39-b3ae-0e1d1594cc91/backupFiles",
+                        "Name": null,
+                        "Type": "BackupFileReferenceList"
+                    }
+                ],
+                "UID": "urn:veeam:Backup:19e7657d-8b5b-4d39-b3ae-0e1d1594cc91",
+                "Name": "k8s",
+                "Href": "https://192.168.4.44:9398/api/backups/19e7657d-8b5b-4d39-b3ae-0e1d1594cc91",
+                "Type": "BackupReference"
+            },
+            {
+                "Links": [
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/backupServers/36a6cec7-f3d9-4c42-913d-ef7fec97a0b1",
+                        "Name": "192.168.4.44",
+                        "Type": "BackupServerReference"
+                    },
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/repositories/23486280-eb43-4bd8-a8f2-91544e97306d",
+                        "Name": "Rstore Repo 2",
+                        "Type": "RepositoryReference"
+                    },
+                    {
+                        "Rel": "Alternate",
+                        "Href": "https://192.168.4.44:9398/api/backups/6891149b-8f0c-4a75-93a2-1adb4fc4410d?format=Entity",
+                        "Name": "Backup to Rstore",
+                        "Type": "Backup"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/6891149b-8f0c-4a75-93a2-1adb4fc4410d/restorePoints",
+                        "Name": null,
+                        "Type": "RestorePointReferenceList"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/6891149b-8f0c-4a75-93a2-1adb4fc4410d/backupFiles",
+                        "Name": null,
+                        "Type": "BackupFileReferenceList"
+                    }
+                ],
+                "UID": "urn:veeam:Backup:6891149b-8f0c-4a75-93a2-1adb4fc4410d",
+                "Name": "Backup to Rstore",
+                "Href": "https://192.168.4.44:9398/api/backups/6891149b-8f0c-4a75-93a2-1adb4fc4410d",
+                "Type": "BackupReference"
+            },
+            {
+                "Links": [
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/backupServers/36a6cec7-f3d9-4c42-913d-ef7fec97a0b1",
+                        "Name": "192.168.4.44",
+                        "Type": "BackupServerReference"
+                    },
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/repositories/d51ba7e6-d4fb-4a50-ad90-aacdca13f32d",
+                        "Name": "Ubuntu_DC1_Repo1",
+                        "Type": "RepositoryReference"
+                    },
+                    {
+                        "Rel": "Alternate",
+                        "Href": "https://192.168.4.44:9398/api/backups/29927519-1f4f-40a1-bb29-376da5d6c3b3?format=Entity",
+                        "Name": "SQL1",
+                        "Type": "Backup"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/29927519-1f4f-40a1-bb29-376da5d6c3b3/restorePoints",
+                        "Name": null,
+                        "Type": "RestorePointReferenceList"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/29927519-1f4f-40a1-bb29-376da5d6c3b3/backupFiles",
+                        "Name": null,
+                        "Type": "BackupFileReferenceList"
+                    }
+                ],
+                "UID": "urn:veeam:Backup:29927519-1f4f-40a1-bb29-376da5d6c3b3",
+                "Name": "SQL1",
+                "Href": "https://192.168.4.44:9398/api/backups/29927519-1f4f-40a1-bb29-376da5d6c3b3",
+                "Type": "BackupReference"
+            },
+            {
+                "Links": [
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/backupServers/36a6cec7-f3d9-4c42-913d-ef7fec97a0b1",
+                        "Name": "192.168.4.44",
+                        "Type": "BackupServerReference"
+                    },
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/repositories/8c0a051a-842f-4c83-9ef7-94b29800cfb6",
+                        "Name": "Default Backup Repository",
+                        "Type": "RepositoryReference"
+                    },
+                    {
+                        "Rel": "Alternate",
+                        "Href": "https://192.168.4.44:9398/api/backups/1a9e9be5-d3e5-40b8-80ac-4d03cbc1ef89?format=Entity",
+                        "Name": "Docker Swarm",
+                        "Type": "Backup"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/1a9e9be5-d3e5-40b8-80ac-4d03cbc1ef89/restorePoints",
+                        "Name": null,
+                        "Type": "RestorePointReferenceList"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/1a9e9be5-d3e5-40b8-80ac-4d03cbc1ef89/backupFiles",
+                        "Name": null,
+                        "Type": "BackupFileReferenceList"
+                    }
+                ],
+                "UID": "urn:veeam:Backup:1a9e9be5-d3e5-40b8-80ac-4d03cbc1ef89",
+                "Name": "Docker Swarm",
+                "Href": "https://192.168.4.44:9398/api/backups/1a9e9be5-d3e5-40b8-80ac-4d03cbc1ef89",
+                "Type": "BackupReference"
+            },
+            {
+                "Links": [
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/backupServers/36a6cec7-f3d9-4c42-913d-ef7fec97a0b1",
+                        "Name": "192.168.4.44",
+                        "Type": "BackupServerReference"
+                    },
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/repositories/9364e671-6a83-416c-8beb-e060d5f1df76",
+                        "Name": "AWS SOBR",
+                        "Type": "RepositoryReference"
+                    },
+                    {
+                        "Rel": "Alternate",
+                        "Href": "https://192.168.4.44:9398/api/backups/d40e965b-ce3c-4e32-bb05-4e5169a6fa03?format=Entity",
+                        "Name": "Agent to AWS",
+                        "Type": "Backup"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/d40e965b-ce3c-4e32-bb05-4e5169a6fa03/childbackups",
+                        "Name": null,
+                        "Type": "BackupReferenceList"
+                    }
+                ],
+                "UID": "urn:veeam:Backup:d40e965b-ce3c-4e32-bb05-4e5169a6fa03",
+                "Name": "Agent to AWS",
+                "Href": "https://192.168.4.44:9398/api/backups/d40e965b-ce3c-4e32-bb05-4e5169a6fa03",
+                "Type": "BackupReference"
+            },
+            {
+                "Links": [
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/backupServers/36a6cec7-f3d9-4c42-913d-ef7fec97a0b1",
+                        "Name": "192.168.4.44",
+                        "Type": "BackupServerReference"
+                    },
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/repositories/d51ba7e6-d4fb-4a50-ad90-aacdca13f32d",
+                        "Name": "Ubuntu_DC1_Repo1",
+                        "Type": "RepositoryReference"
+                    },
+                    {
+                        "Rel": "Alternate",
+                        "Href": "https://192.168.4.44:9398/api/backups/b2f50c7c-de79-470a-acc6-57170b94529d?format=Entity",
+                        "Name": "VM Copy 1\\Small Deb to Immutable",
+                        "Type": "Backup"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/b2f50c7c-de79-470a-acc6-57170b94529d/restorePoints",
+                        "Name": null,
+                        "Type": "RestorePointReferenceList"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/b2f50c7c-de79-470a-acc6-57170b94529d/backupFiles",
+                        "Name": null,
+                        "Type": "BackupFileReferenceList"
+                    },
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/backups/a964f9ce-a23f-4381-b790-a6b3f1943e70",
+                        "Name": "Parent Backup",
+                        "Type": "BackupReference"
+                    }
+                ],
+                "UID": "urn:veeam:Backup:b2f50c7c-de79-470a-acc6-57170b94529d",
+                "Name": "VM Copy 1\\Small Deb to Immutable",
+                "Href": "https://192.168.4.44:9398/api/backups/b2f50c7c-de79-470a-acc6-57170b94529d",
+                "Type": "BackupReference"
+            },
+            {
+                "Links": [
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/backupServers/36a6cec7-f3d9-4c42-913d-ef7fec97a0b1",
+                        "Name": "192.168.4.44",
+                        "Type": "BackupServerReference"
+                    },
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/repositories/28669c14-dae0-4d1f-9fca-ae47830c8ba5",
+                        "Name": "PerJob",
+                        "Type": "RepositoryReference"
+                    },
+                    {
+                        "Rel": "Alternate",
+                        "Href": "https://192.168.4.44:9398/api/backups/6c2b4c92-75c8-45a7-b6ec-5be518b52dd5?format=Entity",
+                        "Name": "PerJob",
+                        "Type": "Backup"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/6c2b4c92-75c8-45a7-b6ec-5be518b52dd5/restorePoints",
+                        "Name": null,
+                        "Type": "RestorePointReferenceList"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/6c2b4c92-75c8-45a7-b6ec-5be518b52dd5/backupFiles",
+                        "Name": null,
+                        "Type": "BackupFileReferenceList"
+                    }
+                ],
+                "UID": "urn:veeam:Backup:6c2b4c92-75c8-45a7-b6ec-5be518b52dd5",
+                "Name": "PerJob",
+                "Href": "https://192.168.4.44:9398/api/backups/6c2b4c92-75c8-45a7-b6ec-5be518b52dd5",
+                "Type": "BackupReference"
+            },
+            {
+                "Links": [
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/backupServers/36a6cec7-f3d9-4c42-913d-ef7fec97a0b1",
+                        "Name": "192.168.4.44",
+                        "Type": "BackupServerReference"
+                    },
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/repositories/8c0a051a-842f-4c83-9ef7-94b29800cfb6",
+                        "Name": "Default Backup Repository",
+                        "Type": "RepositoryReference"
+                    },
+                    {
+                        "Rel": "Alternate",
+                        "Href": "https://192.168.4.44:9398/api/backups/c7b1af21-e0d6-4b9b-aa93-676c45368ba7?format=Entity",
+                        "Name": "ubuntu18 - ubuntu18",
+                        "Type": "Backup"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/c7b1af21-e0d6-4b9b-aa93-676c45368ba7/restorePoints",
+                        "Name": null,
+                        "Type": "RestorePointReferenceList"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/c7b1af21-e0d6-4b9b-aa93-676c45368ba7/backupFiles",
+                        "Name": null,
+                        "Type": "BackupFileReferenceList"
+                    },
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/backups/ad831c72-4dff-4837-9e39-87b7fbf3094c",
+                        "Name": "Parent Backup",
+                        "Type": "BackupReference"
+                    }
+                ],
+                "UID": "urn:veeam:Backup:c7b1af21-e0d6-4b9b-aa93-676c45368ba7",
+                "Name": "ubuntu18 - ubuntu18",
+                "Href": "https://192.168.4.44:9398/api/backups/c7b1af21-e0d6-4b9b-aa93-676c45368ba7",
+                "Type": "BackupReference"
+            },
+            {
+                "Links": [
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/backupServers/36a6cec7-f3d9-4c42-913d-ef7fec97a0b1",
+                        "Name": "192.168.4.44",
+                        "Type": "BackupServerReference"
+                    },
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/repositories/8c0a051a-842f-4c83-9ef7-94b29800cfb6",
+                        "Name": "Default Backup Repository",
+                        "Type": "RepositoryReference"
+                    },
+                    {
+                        "Rel": "Alternate",
+                        "Href": "https://192.168.4.44:9398/api/backups/d24a42a2-9125-4010-90c9-691f4ee40ec7?format=Entity",
+                        "Name": "Agent Backup Job 1",
+                        "Type": "Backup"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/d24a42a2-9125-4010-90c9-691f4ee40ec7/childbackups",
+                        "Name": null,
+                        "Type": "BackupReferenceList"
+                    }
+                ],
+                "UID": "urn:veeam:Backup:d24a42a2-9125-4010-90c9-691f4ee40ec7",
+                "Name": "Agent Backup Job 1",
+                "Href": "https://192.168.4.44:9398/api/backups/d24a42a2-9125-4010-90c9-691f4ee40ec7",
+                "Type": "BackupReference"
+            },
+            {
+                "Links": [
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/backupServers/36a6cec7-f3d9-4c42-913d-ef7fec97a0b1",
+                        "Name": "192.168.4.44",
+                        "Type": "BackupServerReference"
+                    },
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/repositories/8c0a051a-842f-4c83-9ef7-94b29800cfb6",
+                        "Name": "Default Backup Repository",
+                        "Type": "RepositoryReference"
+                    },
+                    {
+                        "Rel": "Alternate",
+                        "Href": "https://192.168.4.44:9398/api/backups/6199e799-05d2-42ac-97f1-6e5dabe7e4d4?format=Entity",
+                        "Name": "SQL",
+                        "Type": "Backup"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/6199e799-05d2-42ac-97f1-6e5dabe7e4d4/restorePoints",
+                        "Name": null,
+                        "Type": "RestorePointReferenceList"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/6199e799-05d2-42ac-97f1-6e5dabe7e4d4/backupFiles",
+                        "Name": null,
+                        "Type": "BackupFileReferenceList"
+                    }
+                ],
+                "UID": "urn:veeam:Backup:6199e799-05d2-42ac-97f1-6e5dabe7e4d4",
+                "Name": "SQL",
+                "Href": "https://192.168.4.44:9398/api/backups/6199e799-05d2-42ac-97f1-6e5dabe7e4d4",
+                "Type": "BackupReference"
+            },
+            {
+                "Links": [
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/backupServers/36a6cec7-f3d9-4c42-913d-ef7fec97a0b1",
+                        "Name": "192.168.4.44",
+                        "Type": "BackupServerReference"
+                    },
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/repositories/8c0a051a-842f-4c83-9ef7-94b29800cfb6",
+                        "Name": "Default Backup Repository",
+                        "Type": "RepositoryReference"
+                    },
+                    {
+                        "Rel": "Alternate",
+                        "Href": "https://192.168.4.44:9398/api/backups/5b0a14a9-9c27-4697-b1af-7ebbc3ec6c5b?format=Entity",
+                        "Name": "Tiny NFS vm",
+                        "Type": "Backup"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/5b0a14a9-9c27-4697-b1af-7ebbc3ec6c5b/restorePoints",
+                        "Name": null,
+                        "Type": "RestorePointReferenceList"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/5b0a14a9-9c27-4697-b1af-7ebbc3ec6c5b/backupFiles",
+                        "Name": null,
+                        "Type": "BackupFileReferenceList"
+                    }
+                ],
+                "UID": "urn:veeam:Backup:5b0a14a9-9c27-4697-b1af-7ebbc3ec6c5b",
+                "Name": "Tiny NFS vm",
+                "Href": "https://192.168.4.44:9398/api/backups/5b0a14a9-9c27-4697-b1af-7ebbc3ec6c5b",
+                "Type": "BackupReference"
+            },
+            {
+                "Links": [
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/backupServers/36a6cec7-f3d9-4c42-913d-ef7fec97a0b1",
+                        "Name": "192.168.4.44",
+                        "Type": "BackupServerReference"
+                    },
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/repositories/7fd6e698-585c-477c-a188-088022d9a99f",
+                        "Name": "F restore",
+                        "Type": "RepositoryReference"
+                    },
+                    {
+                        "Rel": "Alternate",
+                        "Href": "https://192.168.4.44:9398/api/backups/8e48d846-9aa2-4f89-8b79-7f8dd3f158e1?format=Entity",
+                        "Name": "TinyVM2Netapp",
+                        "Type": "Backup"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/8e48d846-9aa2-4f89-8b79-7f8dd3f158e1/restorePoints",
+                        "Name": null,
+                        "Type": "RestorePointReferenceList"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/8e48d846-9aa2-4f89-8b79-7f8dd3f158e1/backupFiles",
+                        "Name": null,
+                        "Type": "BackupFileReferenceList"
+                    }
+                ],
+                "UID": "urn:veeam:Backup:8e48d846-9aa2-4f89-8b79-7f8dd3f158e1",
+                "Name": "TinyVM2Netapp",
+                "Href": "https://192.168.4.44:9398/api/backups/8e48d846-9aa2-4f89-8b79-7f8dd3f158e1",
+                "Type": "BackupReference"
+            },
+            {
+                "Links": [
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/backupServers/36a6cec7-f3d9-4c42-913d-ef7fec97a0b1",
+                        "Name": "192.168.4.44",
+                        "Type": "BackupServerReference"
+                    },
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/repositories/8c0a051a-842f-4c83-9ef7-94b29800cfb6",
+                        "Name": "Default Backup Repository",
+                        "Type": "RepositoryReference"
+                    },
+                    {
+                        "Rel": "Alternate",
+                        "Href": "https://192.168.4.44:9398/api/backups/7921b798-0881-4774-b11c-a2cb3ddac764?format=Entity",
+                        "Name": "Mac Backup - Edwards-MacBook-Air.local",
+                        "Type": "Backup"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/7921b798-0881-4774-b11c-a2cb3ddac764/restorePoints",
+                        "Name": null,
+                        "Type": "RestorePointReferenceList"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/7921b798-0881-4774-b11c-a2cb3ddac764/backupFiles",
+                        "Name": null,
+                        "Type": "BackupFileReferenceList"
+                    },
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/backups/af5bdcb0-9a57-4ba5-a75d-41731c5a9268",
+                        "Name": "Parent Backup",
+                        "Type": "BackupReference"
+                    }
+                ],
+                "UID": "urn:veeam:Backup:7921b798-0881-4774-b11c-a2cb3ddac764",
+                "Name": "Mac Backup - Edwards-MacBook-Air.local",
+                "Href": "https://192.168.4.44:9398/api/backups/7921b798-0881-4774-b11c-a2cb3ddac764",
+                "Type": "BackupReference"
+            },
+            {
+                "Links": [
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/backupServers/36a6cec7-f3d9-4c42-913d-ef7fec97a0b1",
+                        "Name": "192.168.4.44",
+                        "Type": "BackupServerReference"
+                    },
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/repositories/d51ba7e6-d4fb-4a50-ad90-aacdca13f32d",
+                        "Name": "Ubuntu_DC1_Repo1",
+                        "Type": "RepositoryReference"
+                    },
+                    {
+                        "Rel": "Alternate",
+                        "Href": "https://192.168.4.44:9398/api/backups/a964f9ce-a23f-4381-b790-a6b3f1943e70?format=Entity",
+                        "Name": "VM Copy 1",
+                        "Type": "Backup"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/a964f9ce-a23f-4381-b790-a6b3f1943e70/childbackups",
+                        "Name": null,
+                        "Type": "BackupReferenceList"
+                    }
+                ],
+                "UID": "urn:veeam:Backup:a964f9ce-a23f-4381-b790-a6b3f1943e70",
+                "Name": "VM Copy 1",
+                "Href": "https://192.168.4.44:9398/api/backups/a964f9ce-a23f-4381-b790-a6b3f1943e70",
+                "Type": "BackupReference"
+            },
+            {
+                "Links": [
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/backupServers/36a6cec7-f3d9-4c42-913d-ef7fec97a0b1",
+                        "Name": "192.168.4.44",
+                        "Type": "BackupServerReference"
+                    },
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/repositories/7fd6e698-585c-477c-a188-088022d9a99f",
+                        "Name": "F restore",
+                        "Type": "RepositoryReference"
+                    },
+                    {
+                        "Rel": "Alternate",
+                        "Href": "https://192.168.4.44:9398/api/backups/0f33aaef-c685-49d0-a042-b4a0c69c0f4c?format=Entity",
+                        "Name": "VM Copy 2",
+                        "Type": "Backup"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/0f33aaef-c685-49d0-a042-b4a0c69c0f4c/childbackups",
+                        "Name": null,
+                        "Type": "BackupReferenceList"
+                    }
+                ],
+                "UID": "urn:veeam:Backup:0f33aaef-c685-49d0-a042-b4a0c69c0f4c",
+                "Name": "VM Copy 2",
+                "Href": "https://192.168.4.44:9398/api/backups/0f33aaef-c685-49d0-a042-b4a0c69c0f4c",
+                "Type": "BackupReference"
+            },
+            {
+                "Links": [
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/backupServers/36a6cec7-f3d9-4c42-913d-ef7fec97a0b1",
+                        "Name": "192.168.4.44",
+                        "Type": "BackupServerReference"
+                    },
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/repositories/23486280-eb43-4bd8-a8f2-91544e97306d",
+                        "Name": "Rstore Repo 2",
+                        "Type": "RepositoryReference"
+                    },
+                    {
+                        "Rel": "Alternate",
+                        "Href": "https://192.168.4.44:9398/api/backups/734f9515-ed92-4b74-b4ee-c6efd9f7a8f5?format=Entity",
+                        "Name": "Agent to immutable",
+                        "Type": "Backup"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/734f9515-ed92-4b74-b4ee-c6efd9f7a8f5/childbackups",
+                        "Name": null,
+                        "Type": "BackupReferenceList"
+                    }
+                ],
+                "UID": "urn:veeam:Backup:734f9515-ed92-4b74-b4ee-c6efd9f7a8f5",
+                "Name": "Agent to immutable",
+                "Href": "https://192.168.4.44:9398/api/backups/734f9515-ed92-4b74-b4ee-c6efd9f7a8f5",
+                "Type": "BackupReference"
+            },
+            {
+                "Links": [
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/backupServers/36a6cec7-f3d9-4c42-913d-ef7fec97a0b1",
+                        "Name": "192.168.4.44",
+                        "Type": "BackupServerReference"
+                    },
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/repositories/8c0a051a-842f-4c83-9ef7-94b29800cfb6",
+                        "Name": "Default Backup Repository",
+                        "Type": "RepositoryReference"
+                    },
+                    {
+                        "Rel": "Alternate",
+                        "Href": "https://192.168.4.44:9398/api/backups/02a87c3e-fb91-40c6-b88d-c71cd8d2b7a5?format=Entity",
+                        "Name": "solaris solaris_job",
+                        "Type": "Backup"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/02a87c3e-fb91-40c6-b88d-c71cd8d2b7a5/restorePoints",
+                        "Name": null,
+                        "Type": "RestorePointReferenceList"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/02a87c3e-fb91-40c6-b88d-c71cd8d2b7a5/backupFiles",
+                        "Name": null,
+                        "Type": "BackupFileReferenceList"
+                    }
+                ],
+                "UID": "urn:veeam:Backup:02a87c3e-fb91-40c6-b88d-c71cd8d2b7a5",
+                "Name": "solaris solaris_job",
+                "Href": "https://192.168.4.44:9398/api/backups/02a87c3e-fb91-40c6-b88d-c71cd8d2b7a5",
+                "Type": "BackupReference"
+            },
+            {
+                "Links": [
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/backupServers/36a6cec7-f3d9-4c42-913d-ef7fec97a0b1",
+                        "Name": "192.168.4.44",
+                        "Type": "BackupServerReference"
+                    },
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/repositories/7fd6e698-585c-477c-a188-088022d9a99f",
+                        "Name": "F restore",
+                        "Type": "RepositoryReference"
+                    },
+                    {
+                        "Rel": "Alternate",
+                        "Href": "https://192.168.4.44:9398/api/backups/0b491bc1-9741-4176-abbd-dbffb4ef2edc?format=Entity",
+                        "Name": "VM Copy 2\\Small Deb to Immutable",
+                        "Type": "Backup"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/0b491bc1-9741-4176-abbd-dbffb4ef2edc/restorePoints",
+                        "Name": null,
+                        "Type": "RestorePointReferenceList"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/0b491bc1-9741-4176-abbd-dbffb4ef2edc/backupFiles",
+                        "Name": null,
+                        "Type": "BackupFileReferenceList"
+                    },
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/backups/0f33aaef-c685-49d0-a042-b4a0c69c0f4c",
+                        "Name": "Parent Backup",
+                        "Type": "BackupReference"
+                    }
+                ],
+                "UID": "urn:veeam:Backup:0b491bc1-9741-4176-abbd-dbffb4ef2edc",
+                "Name": "VM Copy 2\\Small Deb to Immutable",
+                "Href": "https://192.168.4.44:9398/api/backups/0b491bc1-9741-4176-abbd-dbffb4ef2edc",
+                "Type": "BackupReference"
+            },
+            {
+                "Links": [
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/backupServers/36a6cec7-f3d9-4c42-913d-ef7fec97a0b1",
+                        "Name": "192.168.4.44",
+                        "Type": "BackupServerReference"
+                    },
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/repositories/9364e671-6a83-416c-8beb-e060d5f1df76",
+                        "Name": "AWS SOBR",
+                        "Type": "RepositoryReference"
+                    },
+                    {
+                        "Rel": "Alternate",
+                        "Href": "https://192.168.4.44:9398/api/backups/9e933015-ef01-44c5-bfbb-e59dd47d3992?format=Entity",
+                        "Name": "Agent to AWS - dc1backupvm3.testlab.net",
+                        "Type": "Backup"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/9e933015-ef01-44c5-bfbb-e59dd47d3992/restorePoints",
+                        "Name": null,
+                        "Type": "RestorePointReferenceList"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/9e933015-ef01-44c5-bfbb-e59dd47d3992/backupFiles",
+                        "Name": null,
+                        "Type": "BackupFileReferenceList"
+                    },
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/backups/d40e965b-ce3c-4e32-bb05-4e5169a6fa03",
+                        "Name": "Parent Backup",
+                        "Type": "BackupReference"
+                    }
+                ],
+                "UID": "urn:veeam:Backup:9e933015-ef01-44c5-bfbb-e59dd47d3992",
+                "Name": "Agent to AWS - dc1backupvm3.testlab.net",
+                "Href": "https://192.168.4.44:9398/api/backups/9e933015-ef01-44c5-bfbb-e59dd47d3992",
+                "Type": "BackupReference"
+            },
+            {
+                "Links": [
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/backupServers/36a6cec7-f3d9-4c42-913d-ef7fec97a0b1",
+                        "Name": "192.168.4.44",
+                        "Type": "BackupServerReference"
+                    },
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/repositories/8c0a051a-842f-4c83-9ef7-94b29800cfb6",
+                        "Name": "Default Backup Repository",
+                        "Type": "RepositoryReference"
+                    },
+                    {
+                        "Rel": "Alternate",
+                        "Href": "https://192.168.4.44:9398/api/backups/485b45a4-a9b1-4167-a3ab-f3ba29e4ae66?format=Entity",
+                        "Name": "Agent Backup Job 1 - dc1backupvm3.testlab.net",
+                        "Type": "Backup"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/485b45a4-a9b1-4167-a3ab-f3ba29e4ae66/restorePoints",
+                        "Name": null,
+                        "Type": "RestorePointReferenceList"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/485b45a4-a9b1-4167-a3ab-f3ba29e4ae66/backupFiles",
+                        "Name": null,
+                        "Type": "BackupFileReferenceList"
+                    },
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/backups/d24a42a2-9125-4010-90c9-691f4ee40ec7",
+                        "Name": "Parent Backup",
+                        "Type": "BackupReference"
+                    }
+                ],
+                "UID": "urn:veeam:Backup:485b45a4-a9b1-4167-a3ab-f3ba29e4ae66",
+                "Name": "Agent Backup Job 1 - dc1backupvm3.testlab.net",
+                "Href": "https://192.168.4.44:9398/api/backups/485b45a4-a9b1-4167-a3ab-f3ba29e4ae66",
+                "Type": "BackupReference"
+            },
+            {
+                "Links": [
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/backupServers/36a6cec7-f3d9-4c42-913d-ef7fec97a0b1",
+                        "Name": "192.168.4.44",
+                        "Type": "BackupServerReference"
+                    },
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/repositories/23486280-eb43-4bd8-a8f2-91544e97306d",
+                        "Name": "Rstore Repo 2",
+                        "Type": "RepositoryReference"
+                    },
+                    {
+                        "Rel": "Alternate",
+                        "Href": "https://192.168.4.44:9398/api/backups/6c277f0e-f445-45f8-88a6-f44b4d1b78fe?format=Entity",
+                        "Name": "Agent to immutable - dc1backupvm3.testlab.net",
+                        "Type": "Backup"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/6c277f0e-f445-45f8-88a6-f44b4d1b78fe/restorePoints",
+                        "Name": null,
+                        "Type": "RestorePointReferenceList"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/6c277f0e-f445-45f8-88a6-f44b4d1b78fe/backupFiles",
+                        "Name": null,
+                        "Type": "BackupFileReferenceList"
+                    },
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/backups/734f9515-ed92-4b74-b4ee-c6efd9f7a8f5",
+                        "Name": "Parent Backup",
+                        "Type": "BackupReference"
+                    }
+                ],
+                "UID": "urn:veeam:Backup:6c277f0e-f445-45f8-88a6-f44b4d1b78fe",
+                "Name": "Agent to immutable - dc1backupvm3.testlab.net",
+                "Href": "https://192.168.4.44:9398/api/backups/6c277f0e-f445-45f8-88a6-f44b4d1b78fe",
+                "Type": "BackupReference"
+            },
+            {
+                "Links": [
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/backupServers/36a6cec7-f3d9-4c42-913d-ef7fec97a0b1",
+                        "Name": "192.168.4.44",
+                        "Type": "BackupServerReference"
+                    },
+                    {
+                        "Rel": "Up",
+                        "Href": "https://192.168.4.44:9398/api/repositories/8c0a051a-842f-4c83-9ef7-94b29800cfb6",
+                        "Name": "Default Backup Repository",
+                        "Type": "RepositoryReference"
+                    },
+                    {
+                        "Rel": "Alternate",
+                        "Href": "https://192.168.4.44:9398/api/backups/4c4a72a9-6733-49f2-9202-fcc97a41f77e?format=Entity",
+                        "Name": "SQL1",
+                        "Type": "Backup"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/4c4a72a9-6733-49f2-9202-fcc97a41f77e/restorePoints",
+                        "Name": null,
+                        "Type": "RestorePointReferenceList"
+                    },
+                    {
+                        "Rel": "Down",
+                        "Href": "https://192.168.4.44:9398/api/backups/4c4a72a9-6733-49f2-9202-fcc97a41f77e/backupFiles",
+                        "Name": null,
+                        "Type": "BackupFileReferenceList"
+                    }
+                ],
+                "UID": "urn:veeam:Backup:4c4a72a9-6733-49f2-9202-fcc97a41f77e",
+                "Name": "SQL1",
+                "Href": "https://192.168.4.44:9398/api/backups/4c4a72a9-6733-49f2-9202-fcc97a41f77e",
+                "Type": "BackupReference"
+            }
+        ]
+    },
+    "Entities": null,
+    "Resources": null,
+    "Links": null,
+    "PagingInfo": {
+        "Links": [
+            {
+                "Rel": "First",
+                "Href": "https://192.168.4.44:9398/api/query?type=Backup&pageSize=100&page=1",
+                "Name": null,
+                "Type": null
+            },
+            {
+                "Rel": "Last",
+                "Href": "https://192.168.4.44:9398/api/query?type=Backup&pageSize=100&page=1",
+                "Name": null,
+                "Type": null
+            }
+        ],
+        "PageNum": 1,
+        "PageSize": 100,
+        "PagesCount": 1
+    }
+}

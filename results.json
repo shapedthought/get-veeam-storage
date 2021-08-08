@@ -405,6 +405,15 @@
         "jobName": "SQL1",
         "backups": [
             {
+                "creationTime": "2021-08-08T10:19:34.377Z",
+                "name": "SQL1",
+                "fileType": "vib",
+                "fileName": "SQL1D2021-08-08T111934_97A7.vib",
+                "backupFile": "C:\\Backup\\SQL1\\SQL1D2021-08-08T111934_97A7.vib",
+                "BackupSize": 2.2543106079101562,
+                "DataSize": 6.461218046955764
+            },
+            {
                 "creationTime": "2021-07-31T21:18:08.863Z",
                 "name": "SQL1",
                 "fileType": "vbk",

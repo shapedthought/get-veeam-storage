@@ -39,7 +39,7 @@ def main():
 
 	# First get the active jobs filtering only the backup type
 
-	job_url = base_url + "/query?type=Job&filter=ScheduleEnabled==True"
+	job_url = base_url + "/query?type=Job&filter=ScheduleEnabled==True&JobType==Backup"
 
 	job_response = requests.get(job_url, headers=headers, verify=verify)
 

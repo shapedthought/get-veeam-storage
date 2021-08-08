@@ -10,6 +10,16 @@ from capacity_sorter import capacity_sorter
 
 urllib3.disable_warnings()
 
+def json_writer(name, json_data):
+	with open(name, 'w') as json_file:
+		json.dump(json_data, json_file, indent=4)
+
+def get_data(base_url, ep_url, headers, verify):
+    job_url = base_url + ep_url
+    job_response = requests.get(job_url, headers=headers, verify=verify)
+    job_json = job_response.json()
+    return job_json
+
 def main():
 	HOST = input("Enter server address: ")
 	username = input('Enter Username: ')
@@ -22,13 +32,13 @@ def main():
 
 	response = requests.post(login_url, auth=requests.auth.HTTPBasicAuth(username, password), verify=verify)
 	res_headers = response.headers
-
 	token = res_headers.get('X-RestSvcSessionId')
-
 	headers['X-RestSvcSessionId'] = token
+
 	base_url = f"https://{HOST}:{PORT}/api"
 
 	# First get the active jobs filtering only the backup type
+
 	job_url = base_url + "/query?type=Job&filter=ScheduleEnabled==True"
 
 	job_response = requests.get(job_url, headers=headers, verify=verify)
@@ -44,6 +54,21 @@ def main():
 		job_ids.append({
 			"name": i['Name'],
 			"id": i['UID']
+		})
+
+	# This section is to get VMs per-job, works for perJob too
+	vms_per_job = []
+	for i in job_ids:
+		cat_vms_url = f"{base_url}/jobs/{i['id']}/includes"
+		cat_vms_res = requests.get(cat_vms_url, headers=headers, verify=verify)
+		cat_vms_json = cat_vms_res.json()
+		vm_names = []
+		for k in cat_vms_json['ObjectInJobs']:
+				vm_names.append(k['Name'])
+		vms_per_job.append({
+			"name": i['name'], 
+			"vms": vm_names,
+			"length": len(vm_names)
 		})
 
 	# Next we need to get all the backup files so we can get the UIDs
@@ -70,11 +95,10 @@ def main():
 		url = f"{base_url}/backupFiles/{item}?format=Entity&sortDesc==CreationTimeUtc"
 		bu_data = requests.get(url, headers=headers, verify=verify).json()
 		backup_details.append(bu_data)
-
-	backup_export = input("Output to the backups details? Y/N: ")
+	print("")
+	backup_export = input("Output the detailed backup data? Y/N: ")
 	if backup_export == "Y":
-		with open('job_details.json', 'w') as job_file:
-			json.dump(backup_details, job_file, indent=4)
+		json_writer('job_details.json', backup_details)
 
 	# Next create two lists; one for full backups and the second for incrementals
 	filtered_jobs = []
@@ -115,16 +139,71 @@ def main():
 	export_results = input("Export Backups sorted by job? Y/N: ")
 	if export_results == "Y":
 		print("Jobs Exported\n")
-		with open('backups_by_job.json', 'w') as json_file:
-			json.dump(jobs_grouped, json_file, indent=4)
+		json_writer('backups_by_job.json', jobs_grouped)
 
 	print("Sorting the backups\n")
 
 	sorted_cap = capacity_sorter(jobs_grouped)
 
-	with open("capacity_breakdowns.json", "w") as cap_breakdown:
-		json.dump(sorted_cap, cap_breakdown, indent=4)
+	# Updating each object with the quantity of VMs
+	for i in sorted_cap:
+		for j in vms_per_job:
+			if i['jobName'] == j['name']:
+				i['vmQty'] = j['length']
+				i['vmsInJob'] = j['vms']
 
+
+	# Adding calls to /backup and /backup/id to get the repository info
+	backup_url = base_url + "/backups"
+
+	backup_res = requests.get(backup_url, headers=headers, verify=verify)
+
+	backup_json = backup_res.json()
+
+	uids = [x['UID'] for x in backup_json['Refs']]
+
+	backup_details = []
+
+	print("Performing last Repository related actions \n")
+
+	for i in tqdm(uids):
+		id = i.split(":")[-1]
+		bu_url = base_url + f"/backups/{id}?format=Entity"
+		res_data = requests.get(bu_url, headers=headers, verify=verify)
+		res_json = res_data.json()
+		backup_details.append(res_json)
+
+	for i in sorted_cap:
+		for j in backup_details:
+			if i['jobName'] == j['Name']:
+				i['repository'] = j['Links'][0]['Name']
+
+	json_writer("capacity_breakdowns.json", sorted_cap)
+
+	# Getting the repository information
+
+	repo_url = base_url + "/query?type=Repository&format=Entities"
+
+	repo_res = requests.get(repo_url, headers=headers, verify=verify)
+
+	backup_json = repo_res.json()
+
+	repo_info = []
+
+	for i in backup_json['Entities']['Repositories']['Repositories']:
+		cap = round(i['Capacity'] / 1024**3, 4)
+		free = round(i['FreeSpace'] / 1024**3, 4)
+		used = round(cap - free, 4)
+		data = {
+			"name": i['Name'],
+			"CapacityGB": cap,
+			"FreeSpaceGB": free,
+			"UsedSpaceGB": used
+		}
+		repo_info.append(data)
+	
+	json_writer("repository_details.json", repo_info)
+	
 	print("Complete")
 
 if __name__ == "__main__":

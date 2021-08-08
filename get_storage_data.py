@@ -1,10 +1,6 @@
 import getpass
 import json
-import pprint
-import re
-import string
 import sys
-from datetime import datetime
 
 import requests
 import urllib3
@@ -14,15 +10,14 @@ from capacity_sorter import capacity_sorter
 
 urllib3.disable_warnings()
 
-HOST = input("Enter server address: ")
-username = input('Enter Username: ')
-password = getpass.getpass("Enter password: ")
-
-PORT = "9398"
-verify = False
-headers = {"Accept": "application/json"}
-
 def main():
+	HOST = input("Enter server address: ")
+	username = input('Enter Username: ')
+	password = getpass.getpass("Enter password: ")
+
+	PORT = "9398"
+	verify = False
+	headers = {"Accept": "application/json"}
 	login_url = f"https://{HOST}:{PORT}/api/sessionMngr/?v=v1_6"
 
 	response = requests.post(login_url, auth=requests.auth.HTTPBasicAuth(username, password), verify=verify)
@@ -62,12 +57,13 @@ def main():
 	ids = [x['UID'] for x in backup_json['Refs']]
 
 	# Next run a get on each of these files to get the details
+	print("")
 	confirm = input(f"There are a total of {len(ids)} backups to process, are you happy to continue? Y/N: ")
 
 	if confirm != "Y":
 		sys.exit("Closing programme")
 
-	print("Sending requests to all backup endpoints\n")
+	print("Sending requests to all backup endpoints")
 
 	backup_details = []
 	for item in tqdm(ids):	
@@ -75,9 +71,15 @@ def main():
 		bu_data = requests.get(url, headers=headers, verify=verify).json()
 		backup_details.append(bu_data)
 
+	backup_export = input("Output to the backups details? Y/N: ")
+	if backup_export == "Y":
+		with open('job_details.json', 'w') as job_file:
+			json.dump(backup_details, job_file, indent=4)
+
 	# Next create two lists; one for full backups and the second for incrementals
 	filtered_jobs = []
 
+	print("")
 	print("Filtering Jobs\n")
 
 	for i in tqdm(backup_details):
@@ -97,6 +99,7 @@ def main():
 	# Next we need I need to change the above so that we group all the job data together
 	jobs_grouped = []
 
+	print("")
 	print("Sorting the backups\n")
 	for i in tqdm(job_names):
 		temp_data = []
@@ -108,12 +111,15 @@ def main():
 			"backups": temp_data
 		})
 
-	with open('results.json', 'w') as json_file:
-		json.dump(jobs_grouped, json_file, indent=4)
+	print("")
+	export_results = input("Export Backups sorted by job? Y/N: ")
+	if export_results == "Y":
+		print("Jobs Exported\n")
+		with open('backups_by_job.json', 'w') as json_file:
+			json.dump(jobs_grouped, json_file, indent=4)
 
 	print("Sorting the backups\n")
 
-	# need to sort jobs grouped
 	sorted_cap = capacity_sorter(jobs_grouped)
 
 	with open("capacity_breakdowns.json", "w") as cap_breakdown:

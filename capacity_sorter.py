@@ -39,8 +39,8 @@ def capacity_sorter(json_data):
             "lastFullDa": round(sum(last_full_da),4),
             "lastIncBu": round(sum(last_inc_bu),4),
             "lastIncDa": round(sum(last_inc_da),4),
-            "changeRateBu": round(sum(last_inc_bu) / sum(last_full_bu),4),
-            "changeRateDa": round(sum(last_inc_da) / sum(last_full_da),4)
+            "changeRateBu": round(((sum(last_inc_bu) / sum(last_full_bu)) * 100),4),
+            "changeRateDa": round(((sum(last_inc_da) / sum(last_full_da)) * 100), 4)
         }
         new_averages.append(data)
     return new_averages

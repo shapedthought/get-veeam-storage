@@ -102,7 +102,7 @@ def main():
 	backup_details = []
 	for item in tqdm(ids):	
 		# url = f"{base_url}/backupFiles/{item}?format=Entity&sortDesc==CreationTimeUtc"
-		url = f"{base_url}/backupFiles/{item}"
+		url = f"{base_url}/backupFiles/{item}?format=Entity"
 		bu_data = requests.get(url, headers=headers, verify=verify).json()
 		backup_details.append(bu_data)
 	print("")

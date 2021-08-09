@@ -35,14 +35,17 @@ def capacity_sorter(json_data):
                 if len(inc_temp) > 0:
                     last_inc_bu.append(inc_temp[0]['BackupSize'])
                     last_inc_da.append(inc_temp[0]['DataSize'])
+            
+            crbu = round(((sum(last_inc_bu) / sum(last_full_bu)) * 100),4) if len(last_full_bu) > 0 else 0
+            crda = round(((sum(last_inc_da) / sum(last_full_da)) * 100), 4) if len(last_full_da) > 0 else 0
             data = {
                 "jobName": i['jobName'],
                 "lastFullBu": round(sum(last_full_bu),4),
                 "lastFullDa": round(sum(last_full_da),4),
                 "lastIncBu": round(sum(last_inc_bu),4),
                 "lastIncDa": round(sum(last_inc_da),4),
-                "changeRateBu": round(((sum(last_inc_bu) / sum(last_full_bu)) * 100),4),
-                "changeRateDa": round(((sum(last_inc_da) / sum(last_full_da)) * 100), 4)
+                "changeRateBu": crbu,
+                "changeRateDa": crda
             }
             new_averages.append(data)
     return new_averages

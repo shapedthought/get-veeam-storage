@@ -29,8 +29,9 @@ def capacity_sorter(json_data):
                             inc_temp.append(k)
                 full_temp.sort(reverse=True, key= lambda x: parser.parse(x['creationTime']))
                 inc_temp.sort(reverse=True, key= lambda x: parser.parse(x['creationTime']))
-                last_full_bu.append(full_temp[0]['BackupSize'])
-                last_full_da.append(full_temp[0]['DataSize'])
+                if len(full_temp) > 0:
+                    last_full_bu.append(full_temp[0]['BackupSize'])
+                    last_full_da.append(full_temp[0]['DataSize'])
                 if len(inc_temp) > 0:
                     last_inc_bu.append(inc_temp[0]['BackupSize'])
                     last_inc_da.append(inc_temp[0]['DataSize'])

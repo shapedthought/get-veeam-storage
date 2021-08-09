@@ -1,6 +1,7 @@
 import getpass
 import json
 import sys
+import datetime
 
 import requests
 import urllib3
@@ -71,15 +72,23 @@ def main():
 			"length": len(vm_names)
 		})
 
+	utc_now = datetime.datetime.utcnow()
+	days = datetime.timedelta(14)
+	old_date = utc_now - days
+	old_date_z = old_date.strftime('%Y-%m-%dT%H:%M:%SZ')
+
 	# Next we need to get all the backup files so we can get the UIDs
-	backup_url = base_url + "/backupFiles"
+	# Updated the endpoint so that it only pulls down the last two weeks for backups
+	# backup_url = base_url + "/backupFiles"
+	backup_url =  f'{base_url}/query?type=BackupFile&filter=CreationTimeUTC>="{old_date_z}"'
 
 	backup_res = requests.get(backup_url, headers=headers, verify=verify)
 
 	backup_json = backup_res.json()
 
 	# Pull out the UIDs
-	ids = [x['UID'] for x in backup_json['Refs']]
+	# ids = [x['UID'] for x in backup_json['Refs']]
+	ids = [x['UID'] for x in backup_json['Refs']['Refs']]
 
 	# Next run a get on each of these files to get the details
 	print("")
@@ -88,11 +97,12 @@ def main():
 	if confirm != "Y":
 		sys.exit("Closing programme")
 
-	print("Sending requests to all backup endpoints")
+	print("Sending requests to all backupfile endpoints")
 
 	backup_details = []
 	for item in tqdm(ids):	
-		url = f"{base_url}/backupFiles/{item}?format=Entity&sortDesc==CreationTimeUtc"
+		# url = f"{base_url}/backupFiles/{item}?format=Entity&sortDesc==CreationTimeUtc"
+		url = f"{base_url}/backupFiles/{item}"
 		bu_data = requests.get(url, headers=headers, verify=verify).json()
 		backup_details.append(bu_data)
 	print("")
@@ -140,8 +150,6 @@ def main():
 	if export_results == "Y":
 		print("Jobs Exported\n")
 		json_writer('backups_by_job.json', jobs_grouped)
-
-	print("Sorting the backups\n")
 
 	sorted_cap = capacity_sorter(jobs_grouped)
 

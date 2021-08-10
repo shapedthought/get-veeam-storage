@@ -2,6 +2,7 @@ import getpass
 import json
 import sys
 import datetime
+import pprint
 
 import requests
 import urllib3
@@ -37,10 +38,33 @@ def main():
 	headers['X-RestSvcSessionId'] = token
 
 	base_url = f"https://{HOST}:{PORT}/api"
+	
+	# Adding check on the backup server, in case there is more than on
+	backup_server = base_url + "/backupServers"
+	
+	bus_response = requests.get(backup_server, headers=headers, verify=verify)
+
+	bus_json = bus_response.json()
+
+	print("Backup Servers Found")
+	for index, item in enumerate(bus_json['Refs']):
+		print(f"Index: {index}: Name: {item['Name']}")
+
+	bu_index = 0
+
+	while True:
+		bu_index = int(input("Please select backup server index to assess: "))
+		if bu_index > len(bus_json['Refs']):
+			print("Out of range, please try again")
+		else:
+			break	
+
+	bu_id = bus_json['Refs'][bu_index]['UID'].split(":")[-1]
+	bus_name = bus_json['Refs'][bu_index]['Name']
 
 	# First get the active jobs filtering only the backup type
 
-	job_url = base_url + "/query?type=Job&filter=ScheduleEnabled==True&JobType==Backup"
+	job_url = f"{base_url}/query?type=Job&filter=ScheduleEnabled==True&JobType==Backup&BackupServerUid=={bu_id}"
 
 	job_response = requests.get(job_url, headers=headers, verify=verify)
 
@@ -80,7 +104,7 @@ def main():
 	# Next we need to get all the backup files so we can get the UIDs
 	# Updated the endpoint so that it only pulls down the last two weeks for backups
 	# backup_url = base_url + "/backupFiles"
-	backup_url =  f'{base_url}/query?type=BackupFile&filter=CreationTimeUTC>="{old_date_z}"'
+	backup_url =  f'{base_url}/query?type=BackupFile&filter=CreationTimeUTC>="{old_date_z}"&BackupServerUid=={bu_id}'
 
 	backup_res = requests.get(backup_url, headers=headers, verify=verify)
 
@@ -108,7 +132,7 @@ def main():
 	print("")
 	backup_export = input("Output the detailed backup data? Y/N: ")
 	if backup_export == "Y":
-		json_writer('job_details.json', backup_details)
+		json_writer(f'{bus_name}_job_details.json', backup_details)
 
 	# Next create two lists; one for full backups and the second for incrementals
 	filtered_jobs = []
@@ -149,7 +173,7 @@ def main():
 	export_results = input("Export Backups sorted by job? Y/N: ")
 	if export_results == "Y":
 		print("Jobs Exported\n")
-		json_writer('backups_by_job.json', jobs_grouped)
+		json_writer(f'{bus_name}_backups_by_job.json', jobs_grouped)
 
 	sorted_cap = capacity_sorter(jobs_grouped)
 
@@ -186,7 +210,7 @@ def main():
 			if i['jobName'] == j['Name']:
 				i['repository'] = j['Links'][0]['Name']
 
-	json_writer("capacity_breakdowns.json", sorted_cap)
+	json_writer(f"{bus_name}_capacity_breakdowns.json", sorted_cap)
 
 	# Getting the repository information
 
@@ -210,7 +234,7 @@ def main():
 		}
 		repo_info.append(data)
 	
-	json_writer("repository_details.json", repo_info)
+	json_writer("all_repository_details.json", repo_info)
 	
 	print("Complete")
 

@@ -31,12 +31,37 @@ def main():
     # Makes the request to the backupfile endpoint to get the quantity of backups in the last 14-days
     base_url = f"https://{HOST}:{PORT}/api"
 
+    
+    # Adding check on the backup server, in case there is more than on
+    backup_server = base_url + "/backupServers"
+
+    bus_response = requests.get(backup_server, headers=headers, verify=verify)
+
+    bus_json = bus_response.json()
+
+    print("Backup Servers Found")
+    for index, item in enumerate(bus_json['Refs']):
+        print(f"Index: {index}: Name: {item['Name']}")
+
+    bu_index = 0
+
+    while True:
+        bu_index = int(input("Please select backup server index to assess: "))
+        if bu_index > len(bus_json['Refs']):
+            print("Out of range, please try again")
+        else:
+            break	
+
+    bu_id = bus_json['Refs'][bu_index]['UID'].split(":")[-1]
+    bus_name = bus_json['Refs'][bu_index]['Name']
+
+
     utc_now = datetime.datetime.utcnow()
     days = datetime.timedelta(14)
     old_date = utc_now - days
     old_date_z = old_date.strftime('%Y-%m-%dT%H:%M:%SZ')
 
-    backup_url = f'{base_url}/query?type=BackupFile&filter=CreationTimeUTC>="{old_date_z}"'
+    backup_url = f'{base_url}/query?type=BackupFile&filter=CreationTimeUTC>="{old_date_z}"&BackupServerUid=={bu_id}'
 
     backup_res = requests.get(backup_url, headers=headers, verify=verify)
 

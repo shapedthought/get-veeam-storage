@@ -116,28 +116,23 @@ def main():
 
 	# This section is to get VMs per-job, works for perJob too
 	vms_per_job = []
-	jobs_url = []
-	for i in job_ids:
-		cat_vms_url = f"{base_url}/jobs/{i['id']}/includes"
-		jobs_url.append(cat_vms_url)
 	
 	print("Getting jobs details")
 
-	threads = []
-	with ThreadPoolExecutor(max_workers=max_threads) as executor:
-		for url in tqdm(jobs_url):
-			threads.append(executor.submit(get_data, url, headers, verify))
-		
-		for task in as_completed(threads):
-			cat_vms_json = task.result()
-			vm_names = []
-			for k in cat_vms_json['ObjectInJobs']:
-					vm_names.append(k['Name'])
-			vms_per_job.append({
-				"name": i['name'], 
-				"vms": vm_names,
-				"length": len(vm_names)
-			})
+	# changed back from the thread pool as it broke things
+	vms_per_job = []
+	for i in  tqdm(job_ids):
+		cat_vms_url = f"{base_url}/jobs/{i['id']}/includes"
+		cat_vms_res = requests.get(cat_vms_url, headers=headers, verify=verify)
+		cat_vms_json = cat_vms_res.json()
+		vm_names = []
+		for k in cat_vms_json['ObjectInJobs']:
+				vm_names.append(k['Name'])
+		vms_per_job.append({
+			"name": i['name'], 
+			"vms": vm_names,
+			"length": len(vm_names)
+		})
 
 	utc_now = datetime.datetime.utcnow()
 	days = datetime.timedelta(14)

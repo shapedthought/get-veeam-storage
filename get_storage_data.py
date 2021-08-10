@@ -25,7 +25,8 @@ def get_data(url, headers, verify):
         data_json = data.json()
         return data_json
     except:
-        print(f"Error with {url}")
+      print(f"Error with {url}")
+      pass
 
 def runner(urls, max_threads, headers, verify):
 	threads = []
@@ -39,7 +40,7 @@ def runner(urls, max_threads, headers, verify):
 	return items
 
 def main():
-
+	
 	HOST = input("Enter server address: ")
 	username = input('Enter Username: ')
 	password = getpass.getpass("Enter password: ")
@@ -59,7 +60,6 @@ def main():
 	if response.status_code != 201:
 		sys.exit("Login Unsuccessful, please try again")
 	res_headers = response.headers
-	
 	token = res_headers.get('X-RestSvcSessionId')
 	headers['X-RestSvcSessionId'] = token
 

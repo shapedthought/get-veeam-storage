@@ -36,6 +36,7 @@ def main():
     verify = False
     headers = {"Accept": "application/json"}
     HOST = ""
+    headers_updated = False
 
     # check the headers file if it exists to save entering in the password again
     if os.path.exists('headers.json'):
@@ -51,24 +52,25 @@ def main():
             print("Valid Token found in headers.json file, continuing...")
             headers['X-RestSvcSessionId'] = headers_data['token']
             HOST = headers_data['host']
-        else:
-            # User Input if required
-            HOST = input("Enter server address: ")
-            username = input('Enter Username: ')
-            password = getpass.getpass("Enter password: ")
-            login_url = f"https://{HOST}:{PORT}/api/sessionMngr/?v=v1_6"
-            response = requests.post(login_url, auth=requests.auth.HTTPBasicAuth(
-                username, password), verify=verify)
-            # Gets the access token and sets the header
-            res_headers = response.headers
-            token = res_headers.get('X-RestSvcSessionId')
-            headers['X-RestSvcSessionId'] = token
-            res_save = {
-                "token": res_headers.get('X-RestSvcSessionId'),
-                "date": res_headers.get('Date'), 
-                "host": HOST
-            }
-            json_writer("headers.json", res_save)
+            headers_updated = True
+    if headers_updated == False:
+        # User Input if required
+        HOST = input("Enter server address: ")
+        username = input('Enter Username: ')
+        password = getpass.getpass("Enter password: ")
+        login_url = f"https://{HOST}:{PORT}/api/sessionMngr/?v=v1_6"
+        response = requests.post(login_url, auth=requests.auth.HTTPBasicAuth(
+            username, password), verify=verify)
+        # Gets the access token and sets the header
+        res_headers = response.headers
+        token = res_headers.get('X-RestSvcSessionId')
+        headers['X-RestSvcSessionId'] = token
+        res_save = {
+            "token": res_headers.get('X-RestSvcSessionId'),
+            "date": res_headers.get('Date'), 
+            "host": HOST
+        }
+        json_writer("headers.json", res_save)
 
     while True:
         max_threads = int(input("Max Threads? "))

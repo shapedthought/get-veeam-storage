@@ -29,7 +29,7 @@ def main():
     username = input('Enter Username: ')
     password = getpass.getpass("Enter password: ")
     while True:
-        max_threads = input("Max Threads? ")
+        max_threads = int(input("Max Threads? "))
         if max_threads < 1:
             print("Max threads must be higher than 0")
         else:

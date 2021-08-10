@@ -2,6 +2,7 @@ import datetime
 import getpass
 import time
 import sys
+from tqdm import tqdm
 
 import requests
 import urllib3
@@ -43,23 +44,25 @@ def main():
 
     ids = [x['UID'] for x in backup_json['Refs']['Refs']]
 
-    print(f"There are a total of {len(ids)} backups in the last 14-days")
+    print(f"There are a total of {len(ids)} backup files created in the last 14-days")
 
-    confirm = input("Start test of 100 requests, continue? Y/N: ")
+    test_qty = len(ids) if len(ids) < 100 else 100
+    confirm = input(f"Start test of {test_qty} requests, continue? Y/N: ")
     if confirm == "Y":
         start = time.time()
-        for i in range(100):
+        print("Running")
+        for i in tqdm(range(test_qty)):
             # url = f"{base_url}/backupFiles/{item}?format=Entity&sortDesc==CreationTimeUtc"
-            url = f"{base_url}/backupFiles/{i}?format=Entity"
+            url = f"{base_url}/backupFiles/{ids[i]}?format=Entity"
             bu_data = requests.get(url, headers=headers, verify=verify).json()
     else:
         sys.exit("Exiting programme")
     end = time.time()
 
-    execute_time = (end - start) / 100
-    print(f"{execute_time:.2f} seconds")
+    execute_time = (end - start) / test_qty
+    print(f"Time for per request was {execute_time:.2f} seconds")
     time_required = len(ids) * execute_time
-    print(f"Total execution time {time_required:.2f} seconds")
+    print(f"Total execution time for all {len(ids)} will be {time_required:.2f} seconds")
 
 if __name__ == "__main__":
     main()

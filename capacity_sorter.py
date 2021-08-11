@@ -46,7 +46,7 @@ def capacity_sorter(json_data):
                         "fileName": inc_temp[0]['fileName'],
                         "creationTime": inc_temp[0]['creationTime']
                     }
-                    last_vbk_files.append(file_data)
+                    last_vib_files.append(file_data)
             crbu = round(((sum(last_inc_bu) / sum(last_full_bu)) * 100),4) if len(last_full_bu) > 0 else 0
             crda = round(((sum(last_inc_da) / sum(last_full_da)) * 100), 4) if len(last_full_da) > 0 else 0
             data = {

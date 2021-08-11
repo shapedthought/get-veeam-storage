@@ -14,7 +14,7 @@ spinner = Halo(text='Loading', spinner='dots')
 from capacity_sorter import capacity_sorter
 
 urllib3.disable_warnings()
-logging.basicConfig(filename='app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
+logging.basicConfig(filename='app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 
 def json_writer(name, json_data):
 	with open(name, 'w') as json_file:

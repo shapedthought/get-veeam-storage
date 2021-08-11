@@ -1,8 +1,8 @@
 import datetime
 import getpass
 import json
-from re import M
 import sys
+import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import requests
@@ -14,6 +14,7 @@ spinner = Halo(text='Loading', spinner='dots')
 from capacity_sorter import capacity_sorter
 
 urllib3.disable_warnings()
+logging.basicConfig(filename='app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
 
 def json_writer(name, json_data):
 	with open(name, 'w') as json_file:
@@ -24,8 +25,8 @@ def get_data(url, headers, verify):
         data = requests.get(url, headers=headers, verify=verify)
         data_json = data.json()
         return data_json
-    except:
-      print(f"Error with {url}")
+    except Exception as e:
+      logging.error(f'Error with {url}', exc_info=True)
       pass
 
 def runner(urls, max_threads, headers, verify):

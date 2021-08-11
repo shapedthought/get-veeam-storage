@@ -1,14 +1,16 @@
 import datetime
 import getpass
-import time
-import sys
-from tqdm import tqdm
-from concurrent.futures import ThreadPoolExecutor, as_completed
-import requests
-import urllib3
 import json
 import os
+import sys
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
+import requests
+import urllib3
 from halo import Halo
+from tqdm import tqdm
+
 spinner = Halo(text='Loading', spinner='dots')
 
 urllib3.disable_warnings()

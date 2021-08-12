@@ -136,16 +136,20 @@ def main():
 
         ids = [x['UID'] for x in backup_json['Refs']['Refs']]
 
-    bu_urls = []
-    for i in ids:
-        url = f"{base_url}/backupFiles/{i}?format=Entity"
-        bu_urls.append(url)
 
     print(
         f"There are a total of {len(ids)} backup files created in the last 14-days")
 
-    test_qty = len(ids) if len(ids) < 100 else 100
-    confirm = input(f"Start test of {test_qty} requests, continue? Y/N: ")
+    max_req = 1000 if len(ids) > 1000 else len(ids)
+    send_req = int(input(f"How many requests to test? Max {max_req}: "))
+    send_req = max_req if send_req > max_req else send_req
+
+    bu_urls = []
+    for i in range(send_req):
+        url = f"{base_url}/backupFiles/{ids[i]}?format=Entity"
+        bu_urls.append(url)
+
+    confirm = input(f"Start test of {send_req} requests, continue? Y/N: ")
     backup_files = []
     if confirm == "Y":
         start = time.time()
@@ -159,7 +163,7 @@ def main():
     else:
         sys.exit("Exiting programme")
     end = time.time()
-    execute_time = (end - start) / test_qty
+    execute_time = (end - start) / send_req
     print(f"Time for per request was {execute_time:.2f} seconds")
     time_required = len(ids) * execute_time
     print(

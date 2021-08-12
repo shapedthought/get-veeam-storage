@@ -4,6 +4,7 @@ import json
 import sys
 import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import os
 
 import requests
 import urllib3
@@ -14,7 +15,7 @@ spinner = Halo(text='Loading', spinner='dots')
 from capacity_sorter import capacity_sorter
 
 urllib3.disable_warnings()
-logging.basicConfig(filename='app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(filename='app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
 
 def json_writer(name, json_data):
 	with open(name, 'w') as json_file:
@@ -41,16 +42,29 @@ def runner(urls, max_threads, headers, verify):
 	return items
 
 def main():
-	
+	if not os.path.exists("confirm.json"):
+		print("Welcome to the VBR Assessment")
+		print("This tools is supplied under the MIT licence and is not associated with Veeam")
+		confirm = input("Are you happy to continue? Enter YES: ")
+		if confirm != "YES":
+			sys.exit("Closing Programme")
+		confirm_text = {
+			"confirmed_date": str(datetime.datetime.utcnow()),
+			"confirmation": confirm
+		}
+		json_writer("confirm.json", confirm_text)
+
 	HOST = input("Enter server address: ")
 	username = input('Enter Username: ')
 	password = getpass.getpass("Enter password: ")
+	a_days = int(input("How many days back would you like to assess?: "))
 	while True:
 		max_threads = int(input("Max Threads? "))
 		if max_threads < 1:
 			print("Max threads must be higher than 0")
 		else:
 			break
+	
 
 	PORT = "9398"
 	verify = False
@@ -60,6 +74,8 @@ def main():
 	response = requests.post(login_url, auth=requests.auth.HTTPBasicAuth(username, password), verify=verify)
 	if response.status_code != 201:
 		sys.exit("Login Unsuccessful, please try again")
+	else:
+		print("Login Successful")
 	res_headers = response.headers
 	token = res_headers.get('X-RestSvcSessionId')
 	headers['X-RestSvcSessionId'] = token
@@ -136,7 +152,7 @@ def main():
 		})
 
 	utc_now = datetime.datetime.utcnow()
-	days = datetime.timedelta(14)
+	days = datetime.timedelta(a_days)
 	old_date = utc_now - days
 	old_date_z = old_date.strftime('%Y-%m-%dT%H:%M:%SZ')
 
@@ -151,6 +167,7 @@ def main():
 
 	# Pull out the UIDs
 	ids = [x['UID'] for x in backup_json['Refs']['Refs']]
+
 
 	bu_urls = []
 
@@ -215,7 +232,6 @@ def main():
 			"backups": temp_data
 		})
 
-	print("")
 	export_results = input("Export Backups sorted by job? Y/N: ")
 	if export_results == "Y":
 		print("Jobs Exported")

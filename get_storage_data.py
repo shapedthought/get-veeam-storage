@@ -1,31 +1,70 @@
+import datetime
 import getpass
 import json
 import sys
-import datetime
-import pprint
+import logging
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import os
 
 import requests
 import urllib3
+from halo import Halo
 from tqdm import tqdm
 
+spinner = Halo(text='Loading', spinner='dots')
 from capacity_sorter import capacity_sorter
 
 urllib3.disable_warnings()
+logging.basicConfig(filename='app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 
 def json_writer(name, json_data):
 	with open(name, 'w') as json_file:
 		json.dump(json_data, json_file, indent=4)
 
-def get_data(base_url, ep_url, headers, verify):
-    job_url = base_url + ep_url
-    job_response = requests.get(job_url, headers=headers, verify=verify)
-    job_json = job_response.json()
-    return job_json
+def get_data(url, headers, verify):
+    try:
+        data = requests.get(url, headers=headers, verify=verify)
+        data_json = data.json()
+        return data_json
+    except Exception as e:
+      logging.error(f'Error with {url}', exc_info=True)
+      pass
+
+def runner(urls, max_threads, headers, verify):
+	threads = []
+	items = []
+	with ThreadPoolExecutor(max_workers=max_threads) as executor:
+		for url in urls:
+			threads.append(executor.submit(get_data, url, headers, verify))
+		
+		for task in as_completed(threads):
+			items.append(task.result())
+	return items
 
 def main():
+	if not os.path.exists("confirm.json"):
+		print("Welcome to the VBR Assessment")
+		print("This tools is supplied under the MIT licence and is not associated with Veeam")
+		confirm = input("Are you happy to continue? Enter YES: ")
+		if confirm != "YES":
+			sys.exit("Closing Programme")
+		confirm_text = {
+			"confirmed_date": str(datetime.datetime.utcnow()),
+			"confirmation": confirm
+		}
+		json_writer("confirm.json", confirm_text)
+
 	HOST = input("Enter server address: ")
 	username = input('Enter Username: ')
 	password = getpass.getpass("Enter password: ")
+	a_days = int(input("How many days back would you like to assess?: "))
+	while True:
+		max_threads = int(input("Max Threads? "))
+		if max_threads < 1:
+			print("Max threads must be higher than 0")
+		else:
+			break
+	
 
 	PORT = "9398"
 	verify = False
@@ -33,6 +72,10 @@ def main():
 	login_url = f"https://{HOST}:{PORT}/api/sessionMngr/?v=v1_6"
 
 	response = requests.post(login_url, auth=requests.auth.HTTPBasicAuth(username, password), verify=verify)
+	if response.status_code != 201:
+		sys.exit("Login Unsuccessful, please try again")
+	else:
+		print("Login Successful")
 	res_headers = response.headers
 	token = res_headers.get('X-RestSvcSessionId')
 	headers['X-RestSvcSessionId'] = token
@@ -42,7 +85,11 @@ def main():
 	# Adding check on the backup server, in case there is more than on
 	backup_server = base_url + "/backupServers"
 	
+	print("Getting the backup server list")
+
+	spinner.start()
 	bus_response = requests.get(backup_server, headers=headers, verify=verify)
+	spinner.stop()
 
 	bus_json = bus_response.json()
 
@@ -57,7 +104,7 @@ def main():
 		if bu_index > len(bus_json['Refs']):
 			print("Out of range, please try again")
 		else:
-			break	
+			break
 
 	bu_id = bus_json['Refs'][bu_index]['UID'].split(":")[-1]
 	bus_name = bus_json['Refs'][bu_index]['Name']
@@ -66,12 +113,15 @@ def main():
 
 	job_url = f"{base_url}/query?type=Job&filter=ScheduleEnabled==True&JobType==Backup&BackupServerUid=={bu_id}"
 
+	print("Getting the job names")
+	spinner.start()
 	job_response = requests.get(job_url, headers=headers, verify=verify)
+	spinner.stop()
 
 	job_json = job_response.json()
 
 	# Filter these down to just the names
-	job_names = [x['Name'] for x in job_json['Refs']['Refs']] # modified to work with the query 
+	job_names = [x['Name'] for x in job_json['Refs']['Refs']] 
 
 	job_ids = []
 
@@ -83,7 +133,12 @@ def main():
 
 	# This section is to get VMs per-job, works for perJob too
 	vms_per_job = []
-	for i in job_ids:
+	
+	print("Getting jobs details")
+
+	# changed back from the thread pool as it broke things
+	vms_per_job = []
+	for i in  tqdm(job_ids):
 		cat_vms_url = f"{base_url}/jobs/{i['id']}/includes"
 		cat_vms_res = requests.get(cat_vms_url, headers=headers, verify=verify)
 		cat_vms_json = cat_vms_res.json()
@@ -97,50 +152,59 @@ def main():
 		})
 
 	utc_now = datetime.datetime.utcnow()
-	days = datetime.timedelta(14)
+	days = datetime.timedelta(a_days)
 	old_date = utc_now - days
 	old_date_z = old_date.strftime('%Y-%m-%dT%H:%M:%SZ')
 
 	# Next we need to get all the backup files so we can get the UIDs
-	# Updated the endpoint so that it only pulls down the last two weeks for backups
-	# backup_url = base_url + "/backupFiles"
 	backup_url =  f'{base_url}/query?type=BackupFile&filter=CreationTimeUTC>="{old_date_z}"&BackupServerUid=={bu_id}'
 
+	print("Getting the Backup File IDs")
+	spinner.start()
 	backup_res = requests.get(backup_url, headers=headers, verify=verify)
-
+	spinner.stop()
 	backup_json = backup_res.json()
 
 	# Pull out the UIDs
-	# ids = [x['UID'] for x in backup_json['Refs']]
 	ids = [x['UID'] for x in backup_json['Refs']['Refs']]
 
+
+	bu_urls = []
+
+	for i in ids:
+		url = f"{base_url}/backupFiles/{i}?format=Entity"
+		bu_urls.append(url)
+
 	# Next run a get on each of these files to get the details
-	print("")
 	confirm = input(f"There are a total of {len(ids)} backups to process, are you happy to continue? Y/N: ")
 
 	if confirm != "Y":
 		sys.exit("Closing programme")
 
-	print("Sending requests to all backupfile endpoints")
+	print("Sending requests to all backupfile endpoint")
 
 	backup_details = []
-	for item in tqdm(ids):	
-		# url = f"{base_url}/backupFiles/{item}?format=Entity&sortDesc==CreationTimeUtc"
-		url = f"{base_url}/backupFiles/{item}?format=Entity"
-		bu_data = requests.get(url, headers=headers, verify=verify).json()
-		backup_details.append(bu_data)
-	print("")
+	threads = []
+	with ThreadPoolExecutor(max_workers=max_threads) as executor:
+		for url in tqdm(bu_urls):
+			threads.append(executor.submit(get_data, url, headers, verify))
+		
+		for task in as_completed(threads):
+			backup_details.append(task.result())
+	
+
 	backup_export = input("Output the detailed backup data? Y/N: ")
 	if backup_export == "Y":
 		json_writer(f'{bus_name}_job_details.json', backup_details)
 
+
 	# Next create two lists; one for full backups and the second for incrementals
 	filtered_jobs = []
 
-	print("")
-	print("Filtering Jobs\n")
+	print("Filtering Jobs")
 
-	for i in tqdm(backup_details):
+	spinner.start()
+	for i in backup_details:
 		for j in job_names:
 			if i['Links'][0]['Name'] == j:
 				filtered_jobs.append({
@@ -152,13 +216,12 @@ def main():
 				"BackupSize": i['BackupSize'] / 1024**3,
 				"DataSize": i['DataSize']/ 1024**3
 			})
-
+	spinner.stop()
 
 	# Next we need I need to change the above so that we group all the job data together
 	jobs_grouped = []
 
-	print("")
-	print("Sorting the backups\n")
+	print("Sorting the backups")
 	for i in tqdm(job_names):
 		temp_data = []
 		for j in filtered_jobs:
@@ -169,10 +232,9 @@ def main():
 			"backups": temp_data
 		})
 
-	print("")
 	export_results = input("Export Backups sorted by job? Y/N: ")
 	if export_results == "Y":
-		print("Jobs Exported\n")
+		print("Jobs Exported")
 		json_writer(f'{bus_name}_backups_by_job.json', jobs_grouped)
 
 	sorted_cap = capacity_sorter(jobs_grouped)
@@ -196,7 +258,7 @@ def main():
 
 	backup_details = []
 
-	print("Performing last Repository related actions \n")
+	print("Performing last Repository related actions")
 
 	for i in tqdm(uids):
 		id = i.split(":")[-1]

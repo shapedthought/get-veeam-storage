@@ -33,6 +33,17 @@ def json_writer(name, json_data):
         json.dump(json_data, json_file, indent=4)
 
 def main():
+    if not os.path.exists("confirm_check.json"):
+        print("Welcome to the VBR Assessment checker")
+        print("This tools is supplied under the MIT licence and is not associated with Veeam")
+        confirm = input("Are you happy to continue? Enter YES: ")
+        if confirm != "YES":
+            sys.exit("Closing Programme")
+        confirm_text = {
+            "confirmed_date": str(datetime.datetime.utcnow()),
+            "confirmation": confirm
+        }
+        json_writer("confirm.json", confirm_text)
 
     PORT = "9398"
     verify = False

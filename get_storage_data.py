@@ -13,7 +13,7 @@ from tqdm import tqdm
 
 spinner = Halo(text='Loading', spinner='dots')
 from capacity_sorter import capacity_sorter
-from v11_api_info import v11API
+from V11apiClass import v11API
 
 urllib3.disable_warnings()
 logging.basicConfig(filename='app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')

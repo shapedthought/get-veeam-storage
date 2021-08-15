@@ -66,7 +66,7 @@ class EmClass:
     # def load_bu_data(self, file_data: List[str]) -> None:
     #     self.bus_json = file_data
 
-    def get_jobs(self, bu_id: List[str]) -> None:
+    def get_jobs(self, bu_id: str) -> None:
         job_url = f"{self.base_url}/query?type=Job&filter=ScheduleEnabled==True&JobType==Backup&BackupServerUid=={bu_id}"
         self.job_json = self.__get_data(job_url)
         self.job_names = [x['Name'] for x in self.job_json['Refs']['Refs']] 
@@ -168,8 +168,7 @@ class EmClass:
         for i in tqdm(self.bu_uuid):
             id = i.split(":")[-1]
             bu_url = self.base_url + f"/backups/{id}?format=Entity"
-            res_data = self.__get_data(bu_url)
-            res_json = res_data.json()
+            res_json = self.__get_data(bu_url)
             self.backup_details.append(res_json)
 
         for i in self.sorted_cap:

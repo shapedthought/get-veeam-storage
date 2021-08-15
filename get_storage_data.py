@@ -273,6 +273,37 @@ def main():
 			if i['jobName'] == j['Name']:
 				i['repository'] = j['Links'][0]['Name']
 
+	print("To collected Proxy and Repo information, the tool needs to log into the VBR direct API.")
+	v11_check = input("Are you happy to proceed? Y/N: ")
+	if v11_check == "Y":
+		same_creds = input("Are the credentials the same as with the Enterprise Manager API? Y/N: ")
+		HOST_v11 = input("VBR server address: ")
+		if same_creds != "Y":
+			username2 = input('Enter Username: ')
+			password2 = getpass.getpass("Enter password: ")
+		else:
+			username2 = username
+			password2 = password
+		try: 
+			v11_api = v11API(HOST_v11, username2, password2)
+			v11_api.login()
+			v11_api.get_proxies()
+			v11_api.get_proxy_info()
+			v11_api.get_repos()
+			v11_api.get_repo_info()
+			# output the proxy info to new file
+			json_writer("proxy_info.json", v11_api.proxy_info)
+
+			for i in v11_api.repo_info:
+				for j in sorted_cap:
+					if i['name'] == j['repository']:
+						j['repoMaxTasks'] = i['maxTaskCount']
+						j['repoPerVM'] = i['perVmBackup']
+		except Exception as e:
+			logging.error("Error with v11 API", exc_info=True)
+			print("v11 API failed, continuing...")
+			pass
+
 	json_writer(f"{bus_name}_capacity_breakdowns.json", sorted_cap)
 
 	# Getting the repository information

@@ -39,8 +39,6 @@ class EmClass:
 
     def login(self):
         res = requests.post(self.login_url, auth=requests.auth.HTTPBasicAuth(self.username, self.password), verify=False)
-        self.res_json = res.json()
-        self.status_code = res.status_code
         self.res_headers = res.headers
         self.token = self.res_headers.get('X-RestSvcSessionId')
         self.headers['X-RestSvcSessionId'] = self.token

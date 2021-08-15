@@ -51,7 +51,8 @@ class v11API:
         for i in self.proxy_json['data']:
             data = {
                 "name": i['name'],
-                "maxTaskCount": i['server']['maxTaskCount']
+                "maxTaskCount": i['server']['maxTaskCount'],
+                "transportMode": i['server']['transportMode']
             }
             self.proxy_info.append(data)
 

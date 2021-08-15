@@ -5,8 +5,10 @@ import sys
 import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
+from typing import Any, List, Dict
 
 import requests
+from requests.auth import HTTPBasicAuth
 import urllib3
 from halo import Halo
 from tqdm import tqdm
@@ -18,29 +20,29 @@ from V11apiClass import v11API
 urllib3.disable_warnings()
 logging.basicConfig(filename='app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 
-def json_writer(name, json_data):
+def json_writer(name: str, json_data: Any):
 	with open(name, 'w') as json_file:
 		json.dump(json_data, json_file, indent=4)
 
-def get_data(url, headers, verify):
+def get_data(url: str, headers: List[Dict[str, str]], verify: bool):
     try:
         data = requests.get(url, headers=headers, verify=verify)
         data_json = data.json()
         return data_json
-    except Exception as e:
+    except:
       logging.error(f'Error with {url}', exc_info=True)
       pass
 
-def runner(urls, max_threads, headers, verify):
-	threads = []
-	items = []
-	with ThreadPoolExecutor(max_workers=max_threads) as executor:
-		for url in urls:
-			threads.append(executor.submit(get_data, url, headers, verify))
+# def runner(urls, max_threads, headers, verify):
+# 	threads = []
+# 	items = []
+# 	with ThreadPoolExecutor(max_workers=max_threads) as executor:
+# 		for url in urls:
+# 			threads.append(executor.submit(get_data, url, headers, verify))
 		
-		for task in as_completed(threads):
-			items.append(task.result())
-	return items
+# 		for task in as_completed(threads):
+# 			items.append(task.result())
+# 	return items
 
 def main():
 	if not os.path.exists("confirm.json"):
@@ -72,13 +74,13 @@ def main():
 	headers = {"Accept": "application/json"}
 	login_url = f"https://{HOST}:{PORT}/api/sessionMngr/?v=v1_6"
 
-	response = requests.post(login_url, auth=requests.auth.HTTPBasicAuth(username, password), verify=verify)
+	response = requests.post(login_url, auth=HTTPBasicAuth(username, password), verify=verify)
 	if response.status_code != 201:
 		sys.exit("Login Unsuccessful, please try again")
 	else:
 		print("Login Successful")
 	res_headers = response.headers
-	token = res_headers.get('X-RestSvcSessionId')
+	token = str(res_headers.get('X-RestSvcSessionId'))
 	headers['X-RestSvcSessionId'] = token
 
 	base_url = f"https://{HOST}:{PORT}/api"

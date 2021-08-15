@@ -16,7 +16,7 @@ class v11API:
     get_proxy_info - pulls out the task count for that proxy
     get_repo_info - pulls out the maxTasks and if it is using perVM or perJob
     """
-    def __init__(self, address, username, password) -> None:
+    def __init__(self, address: str, username: str, password: str) -> None:
         self.address = address
         self.username = username
         self.password = password
@@ -35,8 +35,10 @@ class v11API:
         self.token_header['Authorization'] = 'Bearer ' + self.token
 
     def check_login(self) -> bool:
-        if self.check_status != 201:
+        if self.status_code != 201:
             return False
+        else: 
+            return True
 
     def get_proxies(self) -> None:
         proxy_res = requests.get(f'https://{self.address}:{self.port}/api/v1/backupInfrastructure/proxies', headers=self.token_header, verify=False)

@@ -1,24 +1,24 @@
 import re
-
+from typing import Dict, List, Any
 import dateutil.parser as parser
 
-def capacity_sorter(json_data):
+def capacity_sorter(json_data: List[Any]) -> List[Any]:
     new_averages = []
     for i in json_data:
-        names = []
-        last_full_bu = []
-        last_full_da = []
-        last_inc_bu = []
-        last_inc_da = []
-        last_vbk_files = []
-        last_vib_files = []
+        names: List[str] = []
+        last_full_bu: List[float] = []
+        last_full_da: List[float] = []
+        last_inc_bu: List[float] = []
+        last_inc_da: List[float] = []
+        last_vbk_files: List[Dict] = []
+        last_vib_files: List[Dict] = []
         if len(i['backups']) > 0:
             for j in i['backups']:
                 name = re.split('vm-|D20[0-9]+', j['fileName'])[0]
                 if "." in name:
                     name = name.split(".")[0]
                 names.append(name)
-            dedup_names = list(set(names))
+            dedup_names: List[str] = list(set(names))
             # could replace this with the date sorting
             for d in dedup_names:
                 full_temp = []

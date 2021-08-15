@@ -1,8 +1,12 @@
-from get_storage_data import get_data
+from typing import Any, List
 import requests
+from requests.auth import HTTPBasicAuth
+import datetime
 import urllib3
 from tqdm import tqdm
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Dict, List, Optional, TypedDict
+from capacity_sorter import capacity_sorter
 urllib3.disable_warnings()
 
 class EmClass:
@@ -23,46 +27,62 @@ class EmClass:
     add_repo_details - adds repo details to the backup_details object
     get_repos - gets repo information - name & capacity
     """
-    def __init__(self, address, username, password, threads) -> None:
-        self.address = address
-        self.username = username
-        self.password = password
+    def __init__(self) -> None:
+        # self.address = address
+        # self.username = username
+        # self.password = password
         self.port = 9398
-        self.threads = threads
-        self.headers = {"Accept": "application/json"}
-        self.login_url = f"https://{self.address}:{self.port}/api/sessionMngr/?v=v1_6"
-        self.base_url = f"https://{self.address}:{self.port}/api"
+        self.headers: Dict[Optional[str], Optional[str]] = {"Accept": "application/json"}
 
-    def get_data(self, url):
+    # Private Method
+    def __get_data(self, url: str) -> Any:
          data = requests.get(url, headers=self.headers, verify=False)
          return data.json()
 
-    def login(self):
-        res = requests.post(self.login_url, auth=requests.auth.HTTPBasicAuth(self.username, self.password), verify=False)
-        self.res_headers = res.headers
-        self.token = self.res_headers.get('X-RestSvcSessionId')
+    def set_threads(self, threads: int) -> None:
+        self.threads = threads
+
+    def login(self, address: str, username: str, password: str) -> None:
+        self.__address = address
+        self.__username = username
+        self.__password = password
+        self.login_url = f"https://{self.__address}:{self.port}/api/sessionMngr/?v=v1_6"
+        self.base_url = f"https://{self.__address}:{self.port}/api"
+        res = requests.post(self.login_url, auth=HTTPBasicAuth(self.__username, self.__password), verify=False)
+        # self.res_headers: CaseInsensitiveDict = res.headers
+        self.token = res.headers.get('X-RestSvcSessionId')
         self.headers['X-RestSvcSessionId'] = self.token
 
-    def get_bu_servers(self):
-        bu_url = self.base_url + "/backupServers"
-        self.bus_json = self.get_data(bu_url)
+    # Adds token to the header
+    def set_headers(self, token: str) -> None:
+        self.headers['X-RestSvcSessionId'] = token
 
-    def get_jobs(self, bu_id):
+    # Gets and sets the bu server names
+    def get_bu_servers(self) -> None:
+        bu_url = self.base_url + "/backupServers"
+        self.bus_json: Dict[str, Any] = self.__get_data(bu_url)
+
+    # used by the check.py when loading the previous batch of bu file info
+    # def load_bu_data(self, file_data: List[str]) -> None:
+    #     self.bus_json = file_data
+
+    def get_jobs(self, bu_id: List[str]) -> None:
         job_url = f"{self.base_url}/query?type=Job&filter=ScheduleEnabled==True&JobType==Backup&BackupServerUid=={bu_id}"
-        self.job_json = self.get_data(job_url)
-        self.job_ids = []
+        self.job_json = self.__get_data(job_url)
+        self.job_names = [x['Name'] for x in self.job_json['Refs']['Refs']] 
+        self.job_ids: List[Dict[str, str]] = []
         for i in self.job_json['Refs']['Refs']:
             self.job_ids.append({
                 "name": i['Name'],
                 "id": i['UID']
             })
         
-    def get_vm_jobs(self):
+    def get_vm_jobs(self) -> None:
         self.vms_per_job = []
         for i in  tqdm(self.job_ids):
             cat_vms_url = f"{self.base_url}/jobs/{i['id']}/includes"
-            cat_vms_json= get_data(cat_vms_url)
-            vm_names = []
+            cat_vms_json= self.__get_data(cat_vms_url)
+            vm_names: List[str] = []
             for k in cat_vms_json['ObjectInJobs']:
                     vm_names.append(k['Name'])
             self.vms_per_job.append({
@@ -71,27 +91,42 @@ class EmClass:
                 "length": len(vm_names)
             })
 
-    def get_buf_ids(self, old_date_z, bu_id):
+    def get_buf_ids(self, day_qty: int, bu_id: str) -> None:
+        utc_now = datetime.datetime.utcnow()
+        days = datetime.timedelta(day_qty)
+        old_date = utc_now - days
+        old_date_z = old_date.strftime('%Y-%m-%dT%H:%M:%SZ')
         backup_url =  f'{self.base_url}/query?type=BackupFile&filter=CreationTimeUTC>="{old_date_z}"&BackupServerUid=={bu_id}'
-        self.backup_json = get_data(backup_url)
+        self.backup_json = self.__get_data(backup_url)
+        self.ids = [x['UID'] for x in self.backup_json['Refs']['Refs']]
+        self.backup_urls: List[str] = []
+        self.__sort_buf_ids()
+
+    def set_buf_ids(self, ids: List[str]) -> None:
+        self.ids = ids
         self.ids = [x['UID'] for x in self.backup_json['Refs']['Refs']]
         self.backup_urls = []
+        self.__sort_buf_ids()
+
+    # Private method
+    def __sort_buf_ids(self):
+        self.bu_urls: List[str] = []
         for i in self.ids:
             url = f"{self.base_url}/backupFiles/{i}?format=Entity"
             self.bu_urls.append(url)
 
     def get_backup_files(self):
         self.backup_details = []
-        threads = []
+        threads: List[Any] = []
         with ThreadPoolExecutor(max_workers=self.threads) as executor:
             for url in tqdm(self.bu_urls):
-                threads.append(executor.submit(self.get_data, url))
+                threads.append(executor.submit(self.__get_data, url))
 
         for task in as_completed(threads):
             self.backup_details.append(task.result())
 
-    def filter_jobs(self):
-        self.filter_jobs = []
+    def run_filter_jobs(self) -> None:
+        self.filtered_jobs: List[Dict[str, Any]]  = []
         for i in self.backup_details:
             for j in self.job_names:
                 if i['Links'][0]['Name'] == j:
@@ -104,8 +139,11 @@ class EmClass:
                     "BackupSize": i['BackupSize'] / 1024**3,
                     "DataSize": i['DataSize']/ 1024**3
                     })
+
+    def run_capacity_sorter(self) -> None:
+        self.sorted_cap = capacity_sorter(self.jobs_grouped)
                 
-    def add_vm_details(self):
+    def add_vm_details(self) -> None:
         self.jobs_grouped = []
         for i in tqdm(self.job_names):
             temp_data = []
@@ -123,14 +161,14 @@ class EmClass:
                     i['vmQty'] = j['length']
                     i['vmsInJob'] = j['vms']
 
-    def add_repo_details(self):
+    def add_repo_details(self) -> None:
         backup_url = self.base_url + "/backups"
-        backup_json  = get_data(backup_url)
+        backup_json  = self.__get_data(backup_url)
         self.bu_uuid = [x['UID'] for x in backup_json['Refs']]
         for i in tqdm(self.bu_uuid):
             id = i.split(":")[-1]
             bu_url = self.base_url + f"/backups/{id}?format=Entity"
-            res_data = get_data(bu_url)
+            res_data = self.__get_data(bu_url)
             res_json = res_data.json()
             self.backup_details.append(res_json)
 
@@ -140,10 +178,10 @@ class EmClass:
                     i['repository'] = j['Links'][0]['Name']
 
 
-    def get_repos(self):
+    def get_repos(self) -> None:
         repo_url = self.base_url + "/query?type=Repository&format=Entities"
-        repo_json = self.get_data(repo_url)
-        self.repo_details = []
+        repo_json = self.__get_data(repo_url)
+        self.repo_info: List[Any] = []
         for i in repo_json['Entities']['Repositories']['Repositories']:
             cap = round(i['Capacity'] / 1024**3, 4)
             free = round(i['FreeSpace'] / 1024**3, 4)

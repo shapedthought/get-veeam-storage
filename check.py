@@ -77,11 +77,13 @@ def main():
         username = input('Enter Username: ')
         password = getpass.getpass("Enter password: ")
 
-        em_api.login(HOST, username, password)
+        status_code = em_api.login(HOST, username, password)
+        if status_code != 201:
+            sys.exit("Login Unsuccessful, please try again")
 
         res_save = {
             "token": em_api.headers.get('X-RestSvcSessionId'),
-            "date": em_api.headers.get('Date'),
+            "date": str(datetime.datetime.utcnow()),
             "host": HOST
         }
         json_writer("headers.json", res_save)

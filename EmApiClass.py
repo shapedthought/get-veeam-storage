@@ -39,19 +39,19 @@ class EmClass:
          data = requests.get(url, headers=self.headers, verify=False)
          return data.json()
 
-    def set_threads(self, threads: int) -> None:
-        self.threads = threads
+    # def set_threads(self, threads: int) -> None:
+    #     self.threads = threads
 
-    def login(self, address: str, username: str, password: str) -> None:
+    def login(self, address: str, username: str, password: str) -> int:
         self.__address = address
         self.__username = username
         self.__password = password
         self.login_url = f"https://{self.__address}:{self.port}/api/sessionMngr/?v=v1_6"
         self.base_url = f"https://{self.__address}:{self.port}/api"
         res = requests.post(self.login_url, auth=HTTPBasicAuth(self.__username, self.__password), verify=False)
-        # self.res_headers: CaseInsensitiveDict = res.headers
         self.token = res.headers.get('X-RestSvcSessionId')
         self.headers['X-RestSvcSessionId'] = self.token
+        return res.status_code
 
     # Adds token to the header
     def set_headers(self, token: str) -> None:
@@ -62,12 +62,15 @@ class EmClass:
         bu_url = self.base_url + "/backupServers"
         self.bus_json: Dict[str, Any] = self.__get_data(bu_url)
 
+    def set_name_id(self, index) -> None:
+        self.bus_name = self.bus_json['Refs'][index]['Name']
+        self.bu_id = self.bus_json['Refs'][index]['UID'].split(":")[-1]
     # used by the check.py when loading the previous batch of bu file info
     # def load_bu_data(self, file_data: List[str]) -> None:
     #     self.bus_json = file_data
 
-    def get_jobs(self, bu_id: str) -> None:
-        job_url = f"{self.base_url}/query?type=Job&filter=ScheduleEnabled==True&JobType==Backup&BackupServerUid=={bu_id}"
+    def get_jobs(self) -> None:
+        job_url = f"{self.base_url}/query?type=Job&filter=ScheduleEnabled==True&JobType==Backup&BackupServerUid=={self.bu_id}"
         self.job_json = self.__get_data(job_url)
         self.job_names = [x['Name'] for x in self.job_json['Refs']['Refs']] 
         self.job_ids: List[Dict[str, str]] = []
@@ -91,12 +94,12 @@ class EmClass:
                 "length": len(vm_names)
             })
 
-    def get_buf_ids(self, day_qty: int, bu_id: str) -> None:
+    def get_buf_ids(self, day_qty: int) -> None:
         utc_now = datetime.datetime.utcnow()
         days = datetime.timedelta(day_qty)
         old_date = utc_now - days
         old_date_z = old_date.strftime('%Y-%m-%dT%H:%M:%SZ')
-        backup_url =  f'{self.base_url}/query?type=BackupFile&filter=CreationTimeUTC>="{old_date_z}"&BackupServerUid=={bu_id}'
+        backup_url =  f'{self.base_url}/query?type=BackupFile&filter=CreationTimeUTC>="{old_date_z}"&BackupServerUid=={self.bu_id}'
         self.backup_json = self.__get_data(backup_url)
         self.ids = [x['UID'] for x in self.backup_json['Refs']['Refs']]
         self.backup_urls: List[str] = []
@@ -115,14 +118,14 @@ class EmClass:
             url = f"{self.base_url}/backupFiles/{i}?format=Entity"
             self.bu_urls.append(url)
 
-    def get_backup_files(self):
+    def get_backup_files(self, threads=1):
         self.backup_details = []
-        threads: List[Any] = []
-        with ThreadPoolExecutor(max_workers=self.threads) as executor:
+        threads_list: List[Any] = []
+        with ThreadPoolExecutor(max_workers=threads) as executor:
             for url in tqdm(self.bu_urls):
-                threads.append(executor.submit(self.__get_data, url))
+                threads_list.append(executor.submit(self.__get_data, url))
 
-        for task in as_completed(threads):
+        for task in as_completed(threads_list):
             self.backup_details.append(task.result())
 
     def run_filter_jobs(self) -> None:
@@ -136,12 +139,19 @@ class EmClass:
                     "fileType": i['FileType'],
                     "fileName": i['Name'],
                     "backupFile": i['FilePath'],
+                    "DeduplicationRatio": i['DeduplicationRatio'],
+                    "CompressRatio": i['CompressRatio'],
                     "BackupSize": i['BackupSize'] / 1024**3,
                     "DataSize": i['DataSize']/ 1024**3
                     })
 
     def run_capacity_sorter(self) -> None:
         self.sorted_cap = capacity_sorter(self.jobs_grouped)
+        for i in self.sorted_cap:
+            for j in self.vms_per_job:
+                if i['jobName'] == j['name']:
+                    i['vmQty'] = j['length']
+                    i['vmsInJob'] = j['vms']
                 
     def add_vm_details(self) -> None:
         self.jobs_grouped = []
@@ -155,11 +165,11 @@ class EmClass:
                 "backups": temp_data
             })
             
-        for i in self.sorted_cap:
-            for j in self.vms_per_job:
-                if i['jobName'] == j['name']:
-                    i['vmQty'] = j['length']
-                    i['vmsInJob'] = j['vms']
+        # for i in self.sorted_cap:
+        #     for j in self.vms_per_job:
+        #         if i['jobName'] == j['name']:
+        #             i['vmQty'] = j['length']
+        #             i['vmsInJob'] = j['vms']
 
     def add_repo_details(self) -> None:
         backup_url = self.base_url + "/backups"
@@ -175,6 +185,13 @@ class EmClass:
             for j in self.backup_details:
                 if i['jobName'] == j['Name']:
                     i['repository'] = j['Links'][0]['Name']
+
+    def add_v11_details(self, repo_info):
+        for i in repo_info:
+            for j in self.sorted_cap:
+                if i['name'] == j['repository']:
+                    j['repoMaxTasks'] = i['maxTaskCount']
+                    j['repoPerVM'] = i['perVmBackup']
 
 
     def get_repos(self) -> None:

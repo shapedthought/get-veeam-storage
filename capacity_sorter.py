@@ -61,23 +61,31 @@ def capacity_sorter(json_data: List[Any]) -> List[Any]:
             crda = round(((sum(last_inc_da) / sum(last_full_da)) * 100), 4) if len(last_full_da) > 0 else 0
             vbk_mean_dedup: float = 0.0
             vbk_min_dedup: float = 0.0
+            vbk_max_dedup: float = 0.0
             vbk_mean_comp: float= 0.0
             vbk_min_comp: float = 0.0
+            vbk_max_comp: float = 0.0
             vib_mean_dedup: float = 0.0
             vib_min_dedup: float = 0.0
+            vib_max_dedup: float = 0.0
             vib_mean_comp: float = 0.0
             vib_min_comp: float = 0.0
+            vib_max_comp: float = 0.0
             # Add run statistics on each of the list of lists using itertools to do the flattening
             if len(vbk_dedup[0]) > 0: 
                 vbk_mean_dedup = statistics.mean(list(itertools.chain(*vbk_dedup)))
                 vbk_min_dedup = min(list(itertools.chain(*vbk_dedup)))
+                vbk_max_dedup = max(list(itertools.chain(*vbk_dedup)))
                 vbk_mean_comp = statistics.mean(list(itertools.chain(*vbk_compress)))
                 vbk_min_comp = min(list(itertools.chain(*vbk_compress)))
+                vbk_max_comp = max(list(itertools.chain(*vbk_compress)))               
             if len(vib_dedup[0]) > 0:
                 vib_mean_dedup = statistics.mean(list(itertools.chain(*vib_dedup)))
                 vib_min_dedup = min(list(itertools.chain(*vib_dedup)))
+                vib_max_dedup = max(list(itertools.chain(*vib_dedup)))
                 vib_mean_comp = statistics.mean(list(itertools.chain(*vib_compress)))
                 vib_min_comp = min(list(itertools.chain(*vib_compress)))
+                vib_max_comp = max(list(itertools.chain(*vib_compress)))
             data = {
                 "jobName": i['jobName'],
                 "lastFullBu": round(sum(last_full_bu),4),
@@ -88,12 +96,16 @@ def capacity_sorter(json_data: List[Any]) -> List[Any]:
                 "changeRateDa": crda,
                 "vbkMeanDedup": vbk_mean_dedup,
                 "vbkMinDedup": vbk_min_dedup,
+                "vbkMaxDedup": vbk_max_dedup,
                 "vbkMeanCompress": vbk_mean_comp,
                 "vbkMinCompress": vbk_min_comp,
+                "vbkMaxCompress": vbk_max_comp,
                 "vibMeanDedup": vib_mean_dedup,
                 "vibMinDedup": vib_min_dedup,
+                "vibMaxDedup": vib_max_dedup,
                 "vibMeanCompress": vib_mean_comp,
                 "vibMinCompress": vib_min_comp,
+                "vibMaxCompress": vib_max_comp,
                 "lastVBKs": last_vbk_files,
                 "lastVIBs": last_vib_files
             }

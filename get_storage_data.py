@@ -1,38 +1,23 @@
 import datetime
 import getpass
 import json
-import sys
 import logging
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
-from typing import Any, List, Dict
+import sys
+from typing import Any
 
-import requests
-from requests.auth import HTTPBasicAuth
-import urllib3
 from halo import Halo
-from tqdm import tqdm
 
 spinner = Halo(text='Loading', spinner='dots')
 from capacity_sorter import capacity_sorter
-from V11apiClass import v11API
 from EmApiClass import EmClass
+from V11apiClass import v11API
 
-urllib3.disable_warnings()
 logging.basicConfig(filename='app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 
 def json_writer(name: str, json_data: Any):
 	with open(name, 'w') as json_file:
 		json.dump(json_data, json_file, indent=4)
-
-def get_data(url: str, headers: List[Dict[str, str]], verify: bool):
-    try:
-        data = requests.get(url, headers=headers, verify=verify)
-        data_json = data.json()
-        return data_json
-    except:
-      logging.error(f'Error with {url}', exc_info=True)
-      pass
 
 def main():
 	if not os.path.exists("confirm.json"):
@@ -108,9 +93,6 @@ def main():
 
 	print("Sending requests to all backupfile endpoint")
 	em_api.get_backup_files(max_threads)
-
-	# Next create two lists; one for full backups and the second for incrementals
-	filtered_jobs = []
 
 	print("Filtering Jobs")
 

@@ -13,24 +13,21 @@ class EmClass:
     """
     Enterprise Manager API Class
 
-    Initial creation of the class sets all the login requirements
+    Initial creation of the class sets the port and basic API headers
 
     Methods:
     login - logs into the API and sets the access token
     get_bu_servers - gets a list of the backup servers associated with the Enterprise Manager
-    get_jobs - gets a list of all the jobs associated with the by server
+    get_jobs - gets a list of all the jobs associated with the Veeam server
     get_vm_jobs - gets the vms in the jobs above
     get_buf_ids - gets the backup file ids
-    get_backup_files - gets the backup files - requires date to be supplied in UTC
+    get_backup_files - gets the backup files - take a interger for the quantity of days to analyse
     filter_jobs - filters the backup files by the active jobs
     add_vm_details - adds VM details to the backup_details object
     add_repo_details - adds repo details to the backup_details object
     get_repos - gets repo information - name & capacity
     """
     def __init__(self) -> None:
-        # self.address = address
-        # self.username = username
-        # self.password = password
         self.port = 9398
         self.headers: Dict[Optional[str], Optional[str]] = {"Accept": "application/json"}
 
@@ -39,8 +36,8 @@ class EmClass:
          data = requests.get(url, headers=self.headers, verify=False)
          return data.json()
 
-    # def set_threads(self, threads: int) -> None:
-    #     self.threads = threads
+    def set_threads(self, threads: int) -> None:
+        self.threads = threads
 
     def login(self, address: str, username: str, password: str) -> int:
         self.__address = address
@@ -57,6 +54,10 @@ class EmClass:
     def set_headers(self, token: str) -> None:
         self.headers['X-RestSvcSessionId'] = token
 
+    def set_host(self, host: str) -> None:
+        self.__address = host
+        self.base_url = f"https://{self.__address}:{self.port}/api"
+
     # Gets and sets the bu server names
     def get_bu_servers(self) -> None:
         bu_url = self.base_url + "/backupServers"
@@ -65,11 +66,9 @@ class EmClass:
     def set_name_id(self, index) -> None:
         self.bus_name = self.bus_json['Refs'][index]['Name']
         self.bu_id = self.bus_json['Refs'][index]['UID'].split(":")[-1]
-    # used by the check.py when loading the previous batch of bu file info
-    # def load_bu_data(self, file_data: List[str]) -> None:
-    #     self.bus_json = file_data
 
     def get_jobs(self) -> None:
+        # Gets the jobs filtered by schedule enabled
         job_url = f"{self.base_url}/query?type=Job&filter=ScheduleEnabled==True&JobType==Backup&BackupServerUid=={self.bu_id}"
         self.job_json = self.__get_data(job_url)
         self.job_names = [x['Name'] for x in self.job_json['Refs']['Refs']] 
@@ -81,6 +80,7 @@ class EmClass:
             })
         
     def get_vm_jobs(self) -> None:
+        # Loops through the job ids and gets back the VM names
         self.vms_per_job = []
         for i in  tqdm(self.job_ids):
             cat_vms_url = f"{self.base_url}/jobs/{i['id']}/includes"
@@ -95,6 +95,7 @@ class EmClass:
             })
 
     def get_buf_ids(self, day_qty: int) -> None:
+        # Gets the backup ids for all jobs in the timerange and backup server
         utc_now = datetime.datetime.utcnow()
         days = datetime.timedelta(day_qty)
         old_date = utc_now - days
@@ -106,19 +107,21 @@ class EmClass:
         self.__sort_buf_ids()
 
     def set_buf_ids(self, ids: List[str]) -> None:
+        # Sets the backup server ids to the class
         self.ids = ids
         self.ids = [x['UID'] for x in self.backup_json['Refs']['Refs']]
         self.backup_urls = []
         self.__sort_buf_ids()
 
-    # Private method
     def __sort_buf_ids(self):
+        # converts the backup ids into their URLs ready for processing
         self.bu_urls: List[str] = []
         for i in self.ids:
             url = f"{self.base_url}/backupFiles/{i}?format=Entity"
             self.bu_urls.append(url)
 
     def get_backup_files(self, threads=1):
+        # Get the backup file detailed info using the pre-created backup id urls
         self.backup_details = []
         threads_list: List[Any] = []
         with ThreadPoolExecutor(max_workers=threads) as executor:
@@ -129,6 +132,7 @@ class EmClass:
             self.backup_details.append(task.result())
 
     def run_filter_jobs(self) -> None:
+        # Filters out the backup files to just the ones that have a schedule attached
         self.filtered_jobs: List[Dict[str, Any]]  = []
         for i in self.backup_details:
             for j in self.job_names:
@@ -146,6 +150,7 @@ class EmClass:
                     })
 
     def run_capacity_sorter(self) -> None:
+        # Runs the capacity sorter to get the relevant info from the job data
         self.sorted_cap = capacity_sorter(self.jobs_grouped)
         for i in self.sorted_cap:
             for j in self.vms_per_job:
@@ -154,6 +159,7 @@ class EmClass:
                     i['vmsInJob'] = j['vms']
                 
     def add_vm_details(self) -> None:
+        # Adds the VM names to the sorted jobs
         self.jobs_grouped = []
         for i in tqdm(self.job_names):
             temp_data = []
@@ -172,6 +178,7 @@ class EmClass:
         #             i['vmsInJob'] = j['vms']
 
     def add_repo_details(self) -> None:
+        # Adds the repo name to each job object
         backup_url = self.base_url + "/backups"
         backup_json  = self.__get_data(backup_url)
         self.bu_uuid = [x['UID'] for x in backup_json['Refs']]
@@ -187,6 +194,8 @@ class EmClass:
                     i['repository'] = j['Links'][0]['Name']
 
     def add_v11_details(self, repo_info):
+        # Adds the v11 repo tasks to the object, that class needs to be run
+        # separately
         for i in repo_info:
             for j in self.sorted_cap:
                 if i['name'] == j['repository']:
@@ -195,6 +204,7 @@ class EmClass:
 
 
     def get_repos(self) -> None:
+        # Gets the repos information, runs standalone
         repo_url = self.base_url + "/query?type=Repository&format=Entities"
         repo_json = self.__get_data(repo_url)
         self.repo_info: List[Any] = []

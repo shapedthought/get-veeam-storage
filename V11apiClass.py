@@ -1,3 +1,4 @@
+import re
 import requests
 import urllib3
 urllib3.disable_warnings()
@@ -33,6 +34,10 @@ class v11API:
         self.status_code = res.status_code
         self.token = self.res_json.get('access_token')
         self.token_header['Authorization'] = 'Bearer ' + self.token
+
+    def get_data(self, url) -> None:
+        res = requests.get(url, headers=self.token_header, verify=False)
+        return res.json()
 
     def check_login(self) -> bool:
         if self.status_code != 201:

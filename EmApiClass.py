@@ -32,7 +32,7 @@ class EmClass:
         self.headers: Dict[Optional[str], Optional[str]] = {"Accept": "application/json"}
 
     # Private Method
-    def __get_data(self, url: str) -> Any:
+    def get_data(self, url: str) -> Any:
          data = requests.get(url, headers=self.headers, verify=False)
          return data.json()
 
@@ -61,16 +61,17 @@ class EmClass:
     # Gets and sets the bu server names
     def get_bu_servers(self) -> None:
         bu_url = self.base_url + "/backupServers"
-        self.bus_json: Dict[str, Any] = self.__get_data(bu_url)
+        self.bus_json: Dict[str, Any] = self.get_data(bu_url)
 
+    # Sets the ID of the backup server
     def set_name_id(self, index) -> None:
         self.bus_name = self.bus_json['Refs'][index]['Name']
         self.bu_id = self.bus_json['Refs'][index]['UID'].split(":")[-1]
 
+    # Gets the jobs filtered by schedule enabled
     def get_jobs(self) -> None:
-        # Gets the jobs filtered by schedule enabled
         job_url = f"{self.base_url}/query?type=Job&filter=ScheduleEnabled==True&JobType==Backup&BackupServerUid=={self.bu_id}"
-        self.job_json = self.__get_data(job_url)
+        self.job_json = self.get_data(job_url)
         self.job_names = [x['Name'] for x in self.job_json['Refs']['Refs']] 
         self.job_ids: List[Dict[str, str]] = []
         for i in self.job_json['Refs']['Refs']:
@@ -84,7 +85,7 @@ class EmClass:
         self.vms_per_job = []
         for i in  tqdm(self.job_ids):
             cat_vms_url = f"{self.base_url}/jobs/{i['id']}/includes"
-            cat_vms_json= self.__get_data(cat_vms_url)
+            cat_vms_json= self.get_data(cat_vms_url)
             vm_names: List[str] = []
             for k in cat_vms_json['ObjectInJobs']:
                     vm_names.append(k['Name'])
@@ -101,7 +102,8 @@ class EmClass:
         old_date = utc_now - days
         old_date_z = old_date.strftime('%Y-%m-%dT%H:%M:%SZ')
         backup_url =  f'{self.base_url}/query?type=BackupFile&filter=CreationTimeUTC>="{old_date_z}"&BackupServerUid=={self.bu_id}'
-        self.backup_json = self.__get_data(backup_url)
+        print(backup_url)
+        self.backup_json = self.get_data(backup_url)
         self.ids = [x['UID'] for x in self.backup_json['Refs']['Refs']]
         self.backup_urls: List[str] = []
         self.__sort_buf_ids()
@@ -126,7 +128,7 @@ class EmClass:
         threads_list: List[Any] = []
         with ThreadPoolExecutor(max_workers=threads) as executor:
             for url in tqdm(self.bu_urls):
-                threads_list.append(executor.submit(self.__get_data, url))
+                threads_list.append(executor.submit(self.get_data, url))
 
         for task in as_completed(threads_list):
             self.backup_details.append(task.result())
@@ -180,12 +182,12 @@ class EmClass:
     def add_repo_details(self) -> None:
         # Adds the repo name to each job object
         backup_url = self.base_url + "/backups"
-        backup_json  = self.__get_data(backup_url)
+        backup_json  = self.get_data(backup_url)
         self.bu_uuid = [x['UID'] for x in backup_json['Refs']]
         for i in tqdm(self.bu_uuid):
             id = i.split(":")[-1]
             bu_url = self.base_url + f"/backups/{id}?format=Entity"
-            res_json = self.__get_data(bu_url)
+            res_json = self.get_data(bu_url)
             self.backup_details.append(res_json)
 
         for i in self.sorted_cap:
@@ -206,7 +208,7 @@ class EmClass:
     def get_repos(self) -> None:
         # Gets the repos information, runs standalone
         repo_url = self.base_url + "/query?type=Repository&format=Entities"
-        repo_json = self.__get_data(repo_url)
+        repo_json = self.get_data(repo_url)
         self.repo_info: List[Any] = []
         for i in repo_json['Entities']['Repositories']['Repositories']:
             cap = round(i['Capacity'] / 1024**3, 4)

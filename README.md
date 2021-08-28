@@ -15,10 +15,6 @@ How to use:
 5. Run: python .\get_storage_data.py
 6. Follow the instructions
 
-check.py is designed to allow you to test how long the tool will take to run with different thread counts and different quantities of requests up to total of 1000.
-
-It will then display the time it took to run the test and the estimated time it will take to run against all the backup files.
-
 When running get_storage_data.py, there are several steps in the process the program will ask if you wish to save the intermediary data. Selecting either option does not affect the further operations, it just means you can keep that data if required. 
 
 If you save all the files you will have:

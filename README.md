@@ -3,15 +3,9 @@ This is not an official Veeam tool, and it is provided under the MIT licence.
 
 The VJCR creates a report which maps a Veeam Job with it's associated VMs, backups capacity information and repository it is assigned to.
 
-The VJCR uses Veeam's Enterprise Manager APIs to gather this information. In future updates the new Veeam API will be used together information not included in the Enterprise Manager API
+The VJCR uses Veeam's Enterprise Manager APIs to gather most of this this information but there are a couple calls to the v11 API for additional details which are optional. 
 
-The latest version supports multi-threading which mainly speeds up the calls to the backupFiles endpoint which is needed to map the jobs. If a method can be found to filter this to just the configured jobs it will be added.
-
-Note that this tool can potentially make a lot of API calls depending on how many backup files are associated with the VBR server the timescale selected.
-
-Each thread added increases the concurrent API requests to the Enterprise Manager server, though this maybe restricted by the infrastructure. It allows it to completes faster, but also puts more pressure on the Enterprise Manager server and it's associated database.
-
-Due to this is highly recommend that both are monitored during running of the tool. It is also recommended to ensure that there is at least 50% overhead on CPU and RAM in the Enterprise Manager and the associated DB, plus there aren't any other significant operations happening on the API or DB at the time of running.
+The latest version uses a different endpoint for the backup files data so reduces the requests significantly.
 
 How to use:
 1. Install Python, remember to add to PATH

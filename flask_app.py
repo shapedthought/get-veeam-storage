@@ -31,8 +31,8 @@ def jobinfo():
     em_api.set_name_id(0)
     em_api.get_jobs()
     em_api.get_vm_jobs()
-    em_api.get_buf_ids(14)
-    em_api.get_backup_files(10)
+    em_api.get_backup_files(14)
+    # em_api.get_backup_files(10)
     em_api.run_filter_jobs()
     em_api.add_vm_details()
     em_api.run_capacity_sorter()
@@ -51,8 +51,8 @@ def vibCompress():
     em_api.set_headers(token)
     em_api.get_bu_servers()
     em_api.set_name_id(0)
-    em_api.get_buf_ids(14)
-    em_api.get_backup_files(10)
+    em_api.get_backup_files(14)
+    # em_api.get_backup_files(10)
 
     return jsonify(em_api.backup_details)
 

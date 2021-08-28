@@ -36,12 +36,6 @@ def main():
 	username = input('Enter Username: ')
 	password = getpass.getpass("Enter password: ")
 	a_days = int(input("How many days back would you like to assess?: "))
-	while True:
-		max_threads = int(input("Max Threads? "))
-		if max_threads < 1:
-			print("Max threads must be higher than 0")
-		else:
-			break
 	
 	em_api = EmClass()
 	status_code = em_api.login(HOST, username, password)
@@ -80,19 +74,10 @@ def main():
 	print("Getting jobs details")
 	em_api.get_vm_jobs()
 
-	print("Getting the Backup File IDs")
+	print("Getting the Backup Files")
 	spinner.start()
-	em_api.get_buf_ids(a_days)
+	em_api.get_backup_files(a_days)
 	spinner.stop()
-
-	# Next run a get on each of these files to get the details
-	confirm = input(f"There are a total of {len(em_api.ids)} backups to process, are you happy to continue? Y/N: ")
-
-	if confirm != "Y":
-		sys.exit("Closing programme")
-
-	print("Sending requests to all backupfile endpoint")
-	em_api.get_backup_files(max_threads)
 
 	print("Filtering Jobs")
 

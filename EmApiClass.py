@@ -68,7 +68,8 @@ class EmClass:
         self.bus_name = self.bus_json['Refs'][index]['Name']
         self.bu_id = self.bus_json['Refs'][index]['UID'].split(":")[-1]
 
-    # Gets the jobs filtered by schedule enabled
+    # Gets the jobs filtered by schedule enabled 
+    # Need to try this with format entity added
     def get_jobs(self) -> None:
         job_url = f"{self.base_url}/query?type=Job&filter=ScheduleEnabled==True&JobType==Backup&BackupServerUid=={self.bu_id}"
         self.job_json = self.get_data(job_url)
@@ -79,7 +80,7 @@ class EmClass:
                 "name": i['Name'],
                 "id": i['UID']
             })
-        
+    
     def get_vm_jobs(self) -> None:
         # Loops through the job ids and gets back the VM names
         self.vms_per_job = []
@@ -95,25 +96,18 @@ class EmClass:
                 "length": len(vm_names)
             })
 
-    def get_buf_ids(self, day_qty: int) -> None:
+    # Current does not have the format-entities option
+    def get_backup_files(self, day_qty: int) -> None:
         # Gets the backup ids for all jobs in the timerange and backup server
         utc_now = datetime.datetime.utcnow()
         days = datetime.timedelta(day_qty)
         old_date = utc_now - days
         old_date_z = old_date.strftime('%Y-%m-%dT%H:%M:%SZ')
-        backup_url =  f'{self.base_url}/query?type=BackupFile&filter=CreationTimeUTC>="{old_date_z}"&BackupServerUid=={self.bu_id}'
-        print(backup_url)
-        self.backup_json = self.get_data(backup_url)
-        self.ids = [x['UID'] for x in self.backup_json['Refs']['Refs']]
-        self.backup_urls: List[str] = []
-        self.__sort_buf_ids()
 
-    def set_buf_ids(self, ids: List[str]) -> None:
-        # Sets the backup server ids to the class
-        self.ids = ids
-        self.ids = [x['UID'] for x in self.backup_json['Refs']['Refs']]
-        self.backup_urls = []
-        self.__sort_buf_ids()
+        backup_url =  f'{self.base_url}/query?type=BackupFile&format=Entities&filter=CreationTimeUTC>="{old_date_z}"&BackupServerUid=={self.bu_id}'
+        self.backup_json = self.get_data(backup_url)
+
+        self.backup_details = self.backup_json['Entities']['BackupFiles']['BackupFiles']
 
     def __sort_buf_ids(self):
         # converts the backup ids into their URLs ready for processing
@@ -121,17 +115,6 @@ class EmClass:
         for i in self.ids:
             url = f"{self.base_url}/backupFiles/{i}?format=Entity"
             self.bu_urls.append(url)
-
-    def get_backup_files(self, threads=1):
-        # Get the backup file detailed info using the pre-created backup id urls
-        self.backup_details = []
-        threads_list: List[Any] = []
-        with ThreadPoolExecutor(max_workers=threads) as executor:
-            for url in tqdm(self.bu_urls):
-                threads_list.append(executor.submit(self.get_data, url))
-
-        for task in as_completed(threads_list):
-            self.backup_details.append(task.result())
 
     def run_filter_jobs(self) -> None:
         # Filters out the backup files to just the ones that have a schedule attached
@@ -172,12 +155,6 @@ class EmClass:
                 "jobName": i,
                 "backups": temp_data
             })
-            
-        # for i in self.sorted_cap:
-        #     for j in self.vms_per_job:
-        #         if i['jobName'] == j['name']:
-        #             i['vmQty'] = j['length']
-        #             i['vmsInJob'] = j['vms']
 
     def add_repo_details(self) -> None:
         # Adds the repo name to each job object

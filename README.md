@@ -11,9 +11,8 @@ How to use:
 1. Install Python, remember to add to PATH
 2. clone or download the repo
 3. Open a terminal to the folder and enter: pip install -r requirements.txt
-4. To run tests with: python .\check.py (see below)
-5. Run: python .\get_storage_data.py
-6. Follow the instructions
+4. Run: python .\get_storage_data.py
+5. Follow the instructions
 
 When running get_storage_data.py, there are several steps in the process the program will ask if you wish to save the intermediary data. Selecting either option does not affect the further operations, it just means you can keep that data if required. 
 

@@ -1,4 +1,3 @@
-import re
 import requests
 import urllib3
 urllib3.disable_warnings()
@@ -35,7 +34,7 @@ class v11API:
         self.token = self.res_json.get('access_token')
         self.token_header['Authorization'] = 'Bearer ' + self.token
 
-    def get_data(self, url) -> None:
+    def get_data(self, url):
         res = requests.get(url, headers=self.token_header, verify=False)
         return res.json()
 
@@ -59,10 +58,12 @@ class v11API:
             data = {
                 "name": i['name'],
                 "maxTaskCount": i['server']['maxTaskCount'],
-                "transportMode": i['server']['transportMode']
+                "transportMode": i['server']['transportMode'],
+                "hostId": i['server']['hostId']
             }
             self.proxy_info.append(data)
 
+    # should be call add repo info as it adds the details to the main object
     def get_repo_info(self) -> None:
         self.repo_info = []
         for i in self.repo_json['data']:
@@ -72,3 +73,8 @@ class v11API:
                 "perVmBackup": i['repository']['advancedSettings']['perVmBackup']
             }
             self.repo_info.append(data)
+
+    # This will get an add the what proxies are assigned to each job
+    def get_job_data(self) -> None:
+        url = f"https://{self.address}:{self.port}/api/v1/jobs"
+        self.job_info = self.get_data(url)

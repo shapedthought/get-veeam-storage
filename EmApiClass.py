@@ -4,8 +4,8 @@ from requests.auth import HTTPBasicAuth
 import datetime
 import urllib3
 from tqdm import tqdm
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Dict, List, Optional, TypedDict
+from rich.progress import track
+from typing import Dict, List, Optional
 from capacity_sorter import capacity_sorter
 urllib3.disable_warnings()
 
@@ -45,7 +45,8 @@ class EmClass:
         self.__password = password
         self.login_url = f"https://{self.__address}:{self.port}/api/sessionMngr/?v=v1_6"
         self.base_url = f"https://{self.__address}:{self.port}/api"
-        res = requests.post(self.login_url, auth=HTTPBasicAuth(self.__username, self.__password), verify=False)
+        auth=HTTPBasicAuth(self.__username, self.__password)
+        res = requests.post(self.login_url, auth=auth, verify=False)
         self.token = res.headers.get('X-RestSvcSessionId')
         self.headers['X-RestSvcSessionId'] = self.token
         return res.status_code
@@ -70,8 +71,12 @@ class EmClass:
 
     # Gets the jobs filtered by schedule enabled 
     # Need to try this with format entity added
-    def get_jobs(self) -> None:
-        job_url = f"{self.base_url}/query?type=Job&filter=ScheduleEnabled==True&JobType==Backup&BackupServerUid=={self.bu_id}"
+    def get_jobs(self, filtered: bool=True) -> None:
+        if filtered:
+            job_url = f"{self.base_url}/query?type=Job&filter=ScheduleEnabled==True&JobType==Backup&BackupServerUid=={self.bu_id}"
+        else:
+            job_url = f"{self.base_url}/query?type=Job&filter=JobType==Backup&BackupServerUid=={self.bu_id}"
+
         self.job_json = self.get_data(job_url)
         self.job_names = [x['Name'] for x in self.job_json['Refs']['Refs']] 
         self.job_ids: List[Dict[str, str]] = []
@@ -81,10 +86,12 @@ class EmClass:
                 "id": i['UID']
             })
     
+    # v11 has /api/v1/jobs but not everyone has it
     def get_vm_jobs(self) -> None:
         # Loops through the job ids and gets back the VM names
         self.vms_per_job = []
-        for i in  tqdm(self.job_ids):
+        for i in track(self.job_ids, description="Gettings Job Data"):
+        # for i in  tqdm(self.job_ids):
             cat_vms_url = f"{self.base_url}/jobs/{i['id']}/includes"
             cat_vms_json= self.get_data(cat_vms_url)
             vm_names: List[str] = []
@@ -96,7 +103,6 @@ class EmClass:
                 "length": len(vm_names)
             })
 
-    # Current does not have the format-entities option
     def get_backup_files(self, day_qty: int) -> None:
         # Gets the backup ids for all jobs in the timerange and backup server
         utc_now = datetime.datetime.utcnow()
@@ -146,7 +152,8 @@ class EmClass:
     def add_vm_details(self) -> None:
         # Adds the VM names to the sorted jobs
         self.jobs_grouped = []
-        for i in tqdm(self.job_names):
+        for i in track(self.job_names, description="Sorting the backups"):
+        # for i in tqdm(self.job_names):
             temp_data = []
             for j in self.filtered_jobs:
                 if i == j['name']:
@@ -161,7 +168,8 @@ class EmClass:
         backup_url = self.base_url + "/backups"
         backup_json  = self.get_data(backup_url)
         self.bu_uuid = [x['UID'] for x in backup_json['Refs']]
-        for i in tqdm(self.bu_uuid):
+        for i in track(self.bu_uuid, description="Add Repo Details"):
+        # for i in tqdm(self.bu_uuid):
             id = i.split(":")[-1]
             bu_url = self.base_url + f"/backups/{id}?format=Entity"
             res_json = self.get_data(bu_url)
@@ -172,7 +180,7 @@ class EmClass:
                 if i['jobName'] == j['Name']:
                     i['repository'] = j['Links'][0]['Name']
 
-    def add_v11_details(self, repo_info):
+    def add_v11_details(self, repo_info, job_info):
         # Adds the v11 repo tasks to the object, that class needs to be run
         # separately
         for i in repo_info:
@@ -180,6 +188,11 @@ class EmClass:
                 if i['name'] == j['repository']:
                     j['repoMaxTasks'] = i['maxTaskCount']
                     j['repoPerVM'] = i['perVmBackup']
+        # loops through the v11 job object and adds the proxy info
+        for i in job_info['data']:
+            for j in self.sorted_cap:
+                if i['name'] == j['jobName']:
+                    j['backupProxies'] = i['storage']['backupProxies']
 
 
     def get_repos(self) -> None:

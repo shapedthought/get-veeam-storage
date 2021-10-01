@@ -16,6 +16,8 @@ How to use:
 
 When running get_storage_data.py, there are several steps in the process the program will ask if you wish to save the intermediary data. Selecting either option does not affect the further operations, it just means you can keep that data if required. 
 
+All Capacity Figures are in GB.
+
 If you save all the files you will have:
 * jobs_details.json > holds all the backup file information
 * backups_by_jobs > This maps the backups files to the jobs

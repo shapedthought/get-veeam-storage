@@ -10,7 +10,6 @@ from rich.panel import Panel
 from rich.prompt import Prompt
 from rich.table import Table
 from rich.console import Console
-
 from halo import Halo
 
 spinner = Halo(text='Loading', spinner='dots')
@@ -26,14 +25,16 @@ def json_writer(name: str, json_data: Any):
 
 
 def main():
-    print(":zap: [green] Welcome to the, Veeam VBR Assessment![/green] :zap:")
+    print("")
+    print(":zap: [green] Welcome to the Veeam VBR Assessment![/green] :zap:")
+    print("")
     print("This tools is supplied under the MIT licence and is not associated with Veeam")
-
-    HOST = input("Enter server address: ")
+    print("")
+    HOST = input("Enter the Enterprise Manager address: ")
     username = input('Enter Username: ')
     password = getpass.getpass("Enter password: ")
     a_days = int(input("How many days back would you like to assess?: "))
-    filter_jobs = Prompt.ask("Backups files connected to active jobs only?", show_choices=True, choices=["Y", "N"])
+    filter_jobs = Prompt.ask("Assess Backups files connected to active jobs only?", show_choices=True, choices=["Y", "N"])
     filter_bool = False if filter_jobs == "N" else True
 
     em_api = EmClass()
@@ -44,9 +45,7 @@ def main():
     else:
         print("Login Successful")
 
-    print("Getting the backup server list")
-
-    spinner.start()
+    spinner.start(text="Getting the backup server list")
     em_api.get_bu_servers()
     spinner.stop()
 
@@ -54,45 +53,40 @@ def main():
     table.add_column("Index", justify="center", style="cyan")
     table.add_column("Name", justify="center", style="cyan")
 
-    for index, item in enumerate(em_api.bus_json['Refs']):
-        table.add_row(str(index), item['Name'])
-
-    console = Console()
-    console.print(table)
-
     bu_index = 0
+    console = Console()
 
-    while True:
-        bu_index = int(input("Please select backup server index to assess: "))
-        if bu_index > len(em_api.bus_json['Refs']):
-            print("Out of range, please try again")
-        else:
-            break
+    if len(em_api.bus_json['Refs']) > 1:
+        for index, item in enumerate(em_api.bus_json['Refs']):
+            table.add_row(str(index), item['Name'])
+
+        console.print(table)
+
+        while True:
+            bu_index = int(input("Please select backup server index to assess: "))
+            if bu_index > len(em_api.bus_json['Refs']):
+                print("Out of range, please try again")
+            else:
+                break
 
     em_api.set_name_id(bu_index)
 
-    print("Getting the job names")
-    spinner.start()
+    spinner.start(text="Getting the job names")
     em_api.get_jobs(filter_bool)
     spinner.stop()
 
-    print("Getting jobs details")
     em_api.get_vm_jobs()
 
-    print("Getting the Backup Files")
-    spinner.start()
+    spinner.start(text="Getting the Backup Files")
     em_api.get_backup_files(a_days)
     spinner.stop()
 
-    print("Filtering Jobs")
-
-    spinner.start()
+    spinner.start(text="Filtering Jobs")
     em_api.run_filter_jobs()
     spinner.stop()
 
     # Next we need I need to change the above so that we group all the job data together
 
-    print("Sorting the backups")
     em_api.add_vm_details()
 
     export_results = Prompt.ask("Export Backups sorted by jobs?", show_choices=True, choices=["Y", "N"])
@@ -104,11 +98,16 @@ def main():
     em_api.run_capacity_sorter()
     em_api.add_repo_details()
 
-    print("To collected Proxy and Repo information, the tool needs to log into the VBR direct API.")
-    v11_check= Prompt.ask("Are you happy to proceed?", show_choices=True, choices=["Y", "N"])
+    print("")
+    print("[green]To collected Proxy and Repo information, the tool needs to log into the VBR direct API.[/green]")
+    v11_check = Prompt.ask("Are you happy to proceed?", show_choices=True, choices=["Y", "N"])
     if v11_check == "Y":
-        same_creds= Prompt.ask("Are the credentials the same as with the Enterprise Manager API?", show_choices=True, choices=["Y", "N"])
-        HOST_v11 = input("VBR server address: ")
+        same_creds = Prompt.ask("Are the credentials the same as the Enterprise Manager API?", show_choices=True, choices=["Y", "N"])
+        check_host = Prompt.ask("Is the address the same as Enterprise Manager?", show_choices=True, choices=["Y", "N"])
+        if check_host == "Y":
+            HOST_v11 = em_api.get_address()
+        else:
+            HOST_v11 = input("VBR server address: ")
         if same_creds != "Y":
             username2 = input('Enter Username: ')
             password2 = getpass.getpass("Enter password: ")
@@ -116,7 +115,7 @@ def main():
             username2 = username
             password2 = password
         try:
-            spinner.start()
+            spinner.start(text="Getting data")
             v11_api = v11API(HOST_v11, username2, password2)
             v11_api.login()
             v11_api.get_proxies()
@@ -141,10 +140,26 @@ def main():
     # Getting the repository information
     em_api.get_repos()
 
-    json_writer(f"{em_api.bus_name}_all_repository_details.json",
-                em_api.repo_info)
+    # json_writer(f"{em_api.bus_name}_all_repository_details.json",
+    #             em_api.repo_info)
+
+    print("")
+    results_table = Table(title="Summary Results")
+    results_table.add_column("Job Name")
+    results_table.add_column("Change Rate")
+    results_table.add_column("VBK Mean Dedup")
+    results_table.add_column("VIB Mean Dedup")
+    results_table.add_column("VBK Mean Compress")
+    results_table.add_column("VIB Mean Compress")
+
+    for i in em_api.sorted_cap:
+        results_table.add_row(i['jobName'], str(round(i['changeRateBu'], 2)), str(round(i['vbkMeanDedup'], 2)), str(round(i['vibMeanDedup'], 2)), str(round(i['vbkMeanCompress'], 2)), str(round(i['vibMeanCompress'], 2)))
+
+    console.print(results_table)
+    print("All figures are percentages")
 
     print(":fireworks: [green]Complete[/green] :fireworks:")
+
 
 if __name__ == "__main__":
     main()

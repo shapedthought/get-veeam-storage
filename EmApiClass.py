@@ -9,6 +9,7 @@ from typing import Dict, List, Optional
 from capacity_sorter import capacity_sorter
 urllib3.disable_warnings()
 
+
 class EmClass:
     """
     Enterprise Manager API Class
@@ -27,14 +28,14 @@ class EmClass:
     add_repo_details - adds repo details to the backup_details object
     get_repos - gets repo information - name & capacity
     """
+
     def __init__(self) -> None:
         self.port = 9398
         self.headers: Dict[Optional[str], Optional[str]] = {"Accept": "application/json"}
 
-    # Private Method
-    def get_data(self, url: str) -> Any:
-         data = requests.get(url, headers=self.headers, verify=False)
-         return data.json()
+    def _get_data(self, url: str) -> Any:
+        data = requests.get(url, headers=self.headers, verify=False)
+        return data.json()
 
     def set_threads(self, threads: int) -> None:
         self.threads = threads
@@ -45,11 +46,14 @@ class EmClass:
         self.__password = password
         self.login_url = f"https://{self.__address}:{self.port}/api/sessionMngr/?v=v1_6"
         self.base_url = f"https://{self.__address}:{self.port}/api"
-        auth=HTTPBasicAuth(self.__username, self.__password)
+        auth = HTTPBasicAuth(self.__username, self.__password)
         res = requests.post(self.login_url, auth=auth, verify=False)
         self.token = res.headers.get('X-RestSvcSessionId')
         self.headers['X-RestSvcSessionId'] = self.token
         return res.status_code
+
+    def get_address(self) -> None:
+        return self.__address
 
     # Adds token to the header
     def set_headers(self, token: str) -> None:
@@ -62,14 +66,14 @@ class EmClass:
     # Gets and sets the bu server names
     def get_bu_servers(self) -> None:
         bu_url = self.base_url + "/backupServers"
-        self.bus_json: Dict[str, Any] = self.get_data(bu_url)
+        self.bus_json: Dict[str, Any] = self._get_data(bu_url)
 
     # Sets the ID of the backup server
     def set_name_id(self, index) -> None:
         self.bus_name = self.bus_json['Refs'][index]['Name']
         self.bu_id = self.bus_json['Refs'][index]['UID'].split(":")[-1]
 
-    # Gets the jobs filtered by schedule enabled 
+    # Gets the jobs filtered by schedule enabled
     # Need to try this with format entity added
     def get_jobs(self, filtered: bool=True) -> None:
         if filtered:
@@ -77,28 +81,28 @@ class EmClass:
         else:
             job_url = f"{self.base_url}/query?type=Job&filter=JobType==Backup&BackupServerUid=={self.bu_id}"
 
-        self.job_json = self.get_data(job_url)
-        self.job_names = [x['Name'] for x in self.job_json['Refs']['Refs']] 
+        self.job_json = self._get_data(job_url)
+        self.job_names = [x['Name'] for x in self.job_json['Refs']['Refs']]
         self.job_ids: List[Dict[str, str]] = []
         for i in self.job_json['Refs']['Refs']:
             self.job_ids.append({
                 "name": i['Name'],
                 "id": i['UID']
             })
-    
+
     # v11 has /api/v1/jobs but not everyone has it
     def get_vm_jobs(self) -> None:
         # Loops through the job ids and gets back the VM names
         self.vms_per_job = []
         for i in track(self.job_ids, description="Gettings Job Data"):
-        # for i in  tqdm(self.job_ids):
+            # for i in  tqdm(self.job_ids):
             cat_vms_url = f"{self.base_url}/jobs/{i['id']}/includes"
-            cat_vms_json= self.get_data(cat_vms_url)
+            cat_vms_json = self._get_data(cat_vms_url)
             vm_names: List[str] = []
             for k in cat_vms_json['ObjectInJobs']:
-                    vm_names.append(k['Name'])
+                vm_names.append(k['Name'])
             self.vms_per_job.append({
-                "name": i['name'], 
+                "name": i['name'],
                 "vms": vm_names,
                 "length": len(vm_names)
             })
@@ -110,8 +114,8 @@ class EmClass:
         old_date = utc_now - days
         old_date_z = old_date.strftime('%Y-%m-%dT%H:%M:%SZ')
 
-        backup_url =  f'{self.base_url}/query?type=BackupFile&format=Entities&filter=CreationTimeUTC>="{old_date_z}"&BackupServerUid=={self.bu_id}'
-        self.backup_json = self.get_data(backup_url)
+        backup_url = f'{self.base_url}/query?type=BackupFile&format=Entities&filter=CreationTimeUTC>="{old_date_z}"&BackupServerUid=={self.bu_id}'
+        self.backup_json = self._get_data(backup_url)
 
         self.backup_details = self.backup_json['Entities']['BackupFiles']['BackupFiles']
 
@@ -124,20 +128,20 @@ class EmClass:
 
     def run_filter_jobs(self) -> None:
         # Filters out the backup files to just the ones that have a schedule attached
-        self.filtered_jobs: List[Dict[str, Any]]  = []
+        self.filtered_jobs: List[Dict[str, Any]] = []
         for i in self.backup_details:
             for j in self.job_names:
                 if i['Links'][0]['Name'] == j:
                     self.filtered_jobs.append({
-                    "creationTime": i['CreationTimeUtc'],
-                    "name": i['Links'][0]['Name'],
-                    "fileType": i['FileType'],
-                    "fileName": i['Name'],
-                    "backupFile": i['FilePath'],
-                    "DeduplicationRatio": i['DeduplicationRatio'],
-                    "CompressRatio": i['CompressRatio'],
-                    "BackupSize": i['BackupSize'] / 1024**3,
-                    "DataSize": i['DataSize']/ 1024**3
+                        "creationTime": i['CreationTimeUtc'],
+                        "name": i['Links'][0]['Name'],
+                        "fileType": i['FileType'],
+                        "fileName": i['Name'],
+                        "backupFile": i['FilePath'],
+                        "DeduplicationRatio": i['DeduplicationRatio'],
+                        "CompressRatio": i['CompressRatio'],
+                        "BackupSize": i['BackupSize'] / 1024**3,
+                        "DataSize": i['DataSize'] / 1024**3
                     })
 
     def run_capacity_sorter(self) -> None:
@@ -148,12 +152,12 @@ class EmClass:
                 if i['jobName'] == j['name']:
                     i['vmQty'] = j['length']
                     i['vmsInJob'] = j['vms']
-                
+
     def add_vm_details(self) -> None:
         # Adds the VM names to the sorted jobs
         self.jobs_grouped = []
         for i in track(self.job_names, description="Sorting the backups"):
-        # for i in tqdm(self.job_names):
+            # for i in tqdm(self.job_names):
             temp_data = []
             for j in self.filtered_jobs:
                 if i == j['name']:
@@ -166,13 +170,13 @@ class EmClass:
     def add_repo_details(self) -> None:
         # Adds the repo name to each job object
         backup_url = self.base_url + "/backups"
-        backup_json  = self.get_data(backup_url)
+        backup_json = self._get_data(backup_url)
         self.bu_uuid = [x['UID'] for x in backup_json['Refs']]
         for i in track(self.bu_uuid, description="Add Repo Details"):
-        # for i in tqdm(self.bu_uuid):
+            # for i in tqdm(self.bu_uuid):
             id = i.split(":")[-1]
             bu_url = self.base_url + f"/backups/{id}?format=Entity"
-            res_json = self.get_data(bu_url)
+            res_json = self._get_data(bu_url)
             self.backup_details.append(res_json)
 
         for i in self.sorted_cap:
@@ -194,20 +198,19 @@ class EmClass:
                 if i['name'] == j['jobName']:
                     j['backupProxies'] = i['storage']['backupProxies']
 
-
     def get_repos(self) -> None:
         # Gets the repos information, runs standalone
         repo_url = self.base_url + "/query?type=Repository&format=Entities"
-        repo_json = self.get_data(repo_url)
+        repo_json = self._get_data(repo_url)
         self.repo_info: List[Any] = []
         for i in repo_json['Entities']['Repositories']['Repositories']:
             cap = round(i['Capacity'] / 1024**3, 4)
             free = round(i['FreeSpace'] / 1024**3, 4)
             used = round(cap - free, 4)
             data = {
-            "name": i['Name'],
-            "CapacityGB": cap,
-            "FreeSpaceGB": free,
-            "UsedSpaceGB": used
+                "name": i['Name'],
+                "CapacityGB": cap,
+                "FreeSpaceGB": free,
+                "UsedSpaceGB": used
             }
             self.repo_info.append(data)

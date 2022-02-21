@@ -2,6 +2,7 @@ import requests
 import urllib3
 urllib3.disable_warnings()
 
+
 class v11API:
     """
     V11 API Class
@@ -16,16 +17,17 @@ class v11API:
     get_proxy_info - pulls out the task count for that proxy
     get_repo_info - pulls out the maxTasks and if it is using perVM or perJob
     """
+
     def __init__(self, address: str, username: str, password: str) -> None:
         self.address = address
         self.username = username
         self.password = password
         self.port = 9419
         self.headers = {"accept": "application/json",
-                                    "x-api-version": "1.0-rev1", "Content-Type": "application/x-www-form-urlencoded"}
+                        "x-api-version": "1.0-rev1", "Content-Type": "application/x-www-form-urlencoded"}
         self.token_header = {"accept": "application.json", "x-api-version": "1.0-rev1"}
-        self.data = {"grant_type" : "password", "username" : self.username, "password": self.password}
-    
+        self.data = {"grant_type": "password", "username": self.username, "password": self.password}
+
     def login(self) -> None:
         self.login_url = f"https://{self.address}:{self.port}/api/oauth2/token"
         res = requests.post(self.login_url, data=self.data, headers=self.headers, verify=False)
@@ -34,14 +36,14 @@ class v11API:
         self.token = self.res_json.get('access_token')
         self.token_header['Authorization'] = 'Bearer ' + self.token
 
-    def get_data(self, url):
+    def _get_data(self, url):
         res = requests.get(url, headers=self.token_header, verify=False)
         return res.json()
 
     def check_login(self) -> bool:
         if self.status_code != 201:
             return False
-        else: 
+        else:
             return True
 
     def get_proxies(self) -> None:
@@ -77,4 +79,4 @@ class v11API:
     # This will get an add the what proxies are assigned to each job
     def get_job_data(self) -> None:
         url = f"https://{self.address}:{self.port}/api/v1/jobs"
-        self.job_info = self.get_data(url)
+        self.job_info = self._get_data(url)

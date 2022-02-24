@@ -139,10 +139,10 @@ def main():
                 em_api.sorted_cap)
 
     # Getting the repository information
-    # em_api.get_repos()
+    em_api.get_repos()
 
-    # json_writer(f"{em_api.bus_name}_all_repository_details.json",
-    #             em_api.repo_info)
+    json_writer(f"{em_api.bus_name}_all_repository_details.json",
+                em_api.repo_info)
 
     print("")
     results_table = Table(title="Summary Statistics")

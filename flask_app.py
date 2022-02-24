@@ -9,6 +9,26 @@ from capacity_sorter import capacity_sorter
 app = Flask(__name__)
 CORS(app)
 
+"""Experimental API Wrapper for the Get Storage Data report
+
+    Routes:
+    * login - login which passes to the Veeam API
+        * POST requires the following in the body
+            * host - address
+            * name - username
+            * password - password
+    * jobInfo - main report
+        * POST requires the following in the body
+            * host - address
+            * toke - oauth token
+            * All other requests need the same data
+    * vibCompress - VIB Compression data
+    * repos - repos data
+    * proxies - proxies data
+
+    Requires flask > pip install flask
+"""
+
 @app.route('/login', methods=['POST'])
 def login():
     data = json.loads(request.data)

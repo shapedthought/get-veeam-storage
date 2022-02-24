@@ -1,3 +1,4 @@
+from multiprocessing import cpu_count
 from EmApiClass import EmClass
 from V11apiClass import v11API
 import getpass
@@ -138,13 +139,13 @@ def main():
                 em_api.sorted_cap)
 
     # Getting the repository information
-    em_api.get_repos()
+    # em_api.get_repos()
 
     # json_writer(f"{em_api.bus_name}_all_repository_details.json",
     #             em_api.repo_info)
 
     print("")
-    results_table = Table(title="Summary Results")
+    results_table = Table(title="Summary Statistics")
     results_table.add_column("Job Name")
     results_table.add_column("Change Rate")
     results_table.add_column("VBK Mean Dedup")
@@ -153,11 +154,34 @@ def main():
     results_table.add_column("VIB Mean Compress")
 
     for i in em_api.sorted_cap:
-        results_table.add_row(i['jobName'], str(round(i['changeRateBu'], 2)), str(round(i['vbkMeanDedup'], 2)), str(round(i['vibMeanDedup'], 2)), str(round(i['vbkMeanCompress'], 2)), str(round(i['vibMeanCompress'], 2)))
+        results_table.add_row(i['jobName'], 
+                              str(round(i['changeRateBu'], 2)), 
+                              str(round(i['vbkMeanDedup'], 2)), 
+                              str(round(i['vibMeanDedup'], 2)), 
+                              str(round(i['vbkMeanCompress'], 2)), 
+                              str(round(i['vibMeanCompress'], 2)))
 
     console.print(results_table)
     print("All figures are percentages")
+    print("")
 
+    cap_table = Table(title="Capacity and Points")
+    cap_table.add_column("Job Name")
+    cap_table.add_column("Repository")
+    cap_table.add_column("Total Cap GB")
+    cap_table.add_column("Total VBK")
+    cap_table.add_column("Total VIB")
+    cap_table.add_column("Total Points")
+    for i in em_api.sorted_cap:
+        cap_table.add_row(i['jobName'], 
+                          i['repository'],
+                          str(round(i['totalCap'],2)), 
+                          str(round(i['totalVBKCap'],2)), 
+                          str(round(i['totalVIBCap'],2)),
+                          str(round(i['totalPoints'],2)))
+
+    console.print(cap_table)
+    print("")
     print(":fireworks: [green]Complete[/green] :fireworks:")
 
 

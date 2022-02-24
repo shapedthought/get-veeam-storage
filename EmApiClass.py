@@ -3,7 +3,6 @@ import requests
 from requests.auth import HTTPBasicAuth
 import datetime
 import urllib3
-from tqdm import tqdm
 from rich.progress import track
 from typing import Dict, List, Optional
 from capacity_sorter import capacity_sorter

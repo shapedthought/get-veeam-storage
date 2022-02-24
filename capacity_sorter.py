@@ -86,6 +86,9 @@ def capacity_sorter(json_data: List[Any]) -> List[Any]:
                 vib_mean_comp = statistics.mean(list(itertools.chain(*vib_compress)))
                 vib_min_comp = min(list(itertools.chain(*vib_compress)))
                 vib_max_comp = max(list(itertools.chain(*vib_compress)))
+            totalVBKCap = round(sum([x['BackupSize'] for x in full_temp]), 2)
+            totalVIBCap = round(sum([x['BackupSize'] for x in inc_temp]), 2)
+            totalCap = totalVBKCap + totalVIBCap
             data = {
                 "jobName": i['jobName'],
                 "lastFullBu": round(sum(last_full_bu),4),
@@ -107,7 +110,13 @@ def capacity_sorter(json_data: List[Any]) -> List[Any]:
                 "vibMinCompress": vib_min_comp,
                 "vibMaxCompress": vib_max_comp,
                 "lastVBKs": last_vbk_files,
-                "lastVIBs": last_vib_files
+                "lastVIBs": last_vib_files,
+                "totalVBK": len(full_temp),
+                "totalVIB": len(inc_temp),
+                "totalPoints": len(full_temp) + len(inc_temp),
+                "totalVBKCap": totalVBKCap,
+                "totalVIBCap": totalVIBCap,
+                "totalCap": totalCap
             }
             new_averages.append(data)
     return new_averages

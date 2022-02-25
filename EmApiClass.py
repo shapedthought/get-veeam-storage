@@ -51,7 +51,7 @@ class EmClass:
         self.headers['X-RestSvcSessionId'] = self.token
         return res.status_code
 
-    def get_address(self) -> None:
+    def get_address(self) -> str:
         return self.__address
 
     # Adds token to the header

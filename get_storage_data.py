@@ -29,7 +29,7 @@ def main():
     print("")
     print(":zap: [green] Welcome to the Veeam VBR Assessment![/green] :zap:")
     print("")
-    print("This tools is supplied under the MIT licence and is not associated with Veeam")
+    print("This tools is supplied under the MIT license and is not associated with Veeam")
     print("")
     HOST = input("Enter the Enterprise Manager address: ")
     username = input('Enter Username: ')

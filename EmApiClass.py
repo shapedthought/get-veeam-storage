@@ -3,6 +3,7 @@ import requests
 from requests.auth import HTTPBasicAuth
 import datetime
 import urllib3
+import re
 from rich.progress import track
 from typing import Dict, List, Optional
 from capacity_sorter import capacity_sorter
@@ -95,7 +96,9 @@ class EmClass:
         self.vms_per_job = []
         for i in track(self.job_ids, description="Gettings Job Data"):
             # for i in  tqdm(self.job_ids):
-            cat_vms_url = f"{self.base_url}/jobs/{i['id']}/includes"
+            # 'https://192.168.0.25:9398/api/jobs/urn:veeam:Job:02e7be62-5a36-4e34-b2ca-caff08553c3e/includes'
+            id = i['id'].split(":")[-1]
+            cat_vms_url = f"{self.base_url}/jobs/{id}/includes"
             cat_vms_json = self._get_data(cat_vms_url)
             vm_names: List[str] = []
             for k in cat_vms_json['ObjectInJobs']:
@@ -130,10 +133,11 @@ class EmClass:
         self.filtered_jobs: List[Dict[str, Any]] = []
         for i in self.backup_details:
             for j in self.job_names:
-                if i['Links'][0]['Name'] == j:
+                job_name = re.split(r'\\| - ', i['Links'][0]['Name'])[0]
+                if j == job_name:
                     self.filtered_jobs.append({
                         "creationTime": i['CreationTimeUtc'],
-                        "name": i['Links'][0]['Name'],
+                        "name": job_name,
                         "fileType": i['FileType'],
                         "fileName": i['Name'],
                         "backupFile": i['FilePath'],

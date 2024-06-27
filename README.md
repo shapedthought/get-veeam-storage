@@ -1,5 +1,8 @@
 ### Veeam Job Capacity Reporter
 
+**Updated 27th June 2024**
+Fixed some issues with the script as some of the string manipulation needed to be updated. I have also updated the VBR API version to the latest VBR 1.1-rev1.
+
 This is not an official Veeam tool, and it is provided under the MIT license.
 
 The VJCR creates a report which maps a Veeam Job with it's associated VMs, backups capacity information and repository it is assigned to.

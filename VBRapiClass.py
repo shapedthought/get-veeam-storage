@@ -5,7 +5,7 @@ urllib3.disable_warnings()
 
 class v11API:
     """
-    V11 API Class
+    VBR API Class
 
     Initial creation of the class sets all the login requirements
 
@@ -25,7 +25,7 @@ class v11API:
         self.port = 9419
         self.headers = {"accept": "application/json",
                         "x-api-version": "1.0-rev1", "Content-Type": "application/x-www-form-urlencoded"}
-        self.token_header = {"accept": "application.json", "x-api-version": "1.0-rev1"}
+        self.token_header = {"accept": "application.json", "x-api-version": "1.1-rev1"}
         self.data = {"grant_type": "password", "username": self.username, "password": self.password}
 
     def login(self) -> None:
